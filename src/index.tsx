@@ -1,4 +1,4 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 
 const LINKING_ERROR =
   `The package 'pusher-websocket-react-native' doesn't seem to be linked. Make sure: \n\n` +
@@ -17,6 +17,230 @@ const PusherWebsocketReactNative = NativeModules.PusherWebsocketReactNative
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return PusherWebsocketReactNative.multiply(a, b);
+export class PusherEvent {
+  channelName: string;
+  eventName: string;
+  data: any;
+  userId?: string;
+  constructor(args: {
+    channelName: string;
+    eventName: string;
+    data: any;
+    userId?: string;
+  }) {
+    this.channelName = args.channelName;
+    this.eventName = args.eventName;
+    this.data = args.data;
+    this.userId = args.userId;
+  }
+  toString() {
+    return `{ channelName: ${this.channelName}, eventName: ${this.eventName}, data: ${this.data}, userId: ${this.userId} }`;
+  }
+}
+
+export class PusherMember {
+  userId: string;
+  userInfo: any;
+  constructor(userId: string, userInfo: any) {
+    this.userId = userId;
+    this.userInfo = userInfo;
+  }
+
+  toString() {
+    return `{ userId: ${this.userId}, userInfo: ${JSON.stringify(
+      this.userInfo
+    )} }`;
+  }
+}
+
+export class PusherChannel {
+  channelName: string;
+  members = new Set<PusherMember>();
+  me?: PusherMember;
+  onSubscriptionSucceeded?: (data: any) => void;
+  onEvent?: (event: any) => void;
+  onMemberAdded?: (member: PusherMember) => void;
+  onMemberRemoved?: (member: PusherMember) => void;
+  constructor(args: {
+    channelName: string;
+    onSubscriptionSucceeded?: (data: any) => void;
+    onEvent?: (member: PusherEvent) => void;
+    onMemberAdded?: (member: PusherMember) => void;
+    onMemberRemoved?: (member: PusherMember) => void;
+    me?: PusherMember;
+  }) {
+    this.channelName = args.channelName;
+    this.onSubscriptionSucceeded = args.onSubscriptionSucceeded;
+    this.onEvent = args.onEvent;
+    this.onMemberAdded = args.onMemberAdded;
+    this.onMemberRemoved = args.onMemberRemoved;
+    this.me = args.me;
+  }
+
+  async unsubscribe() {
+    return Pusher.getInstance().unsubscribe({
+      channelName: this.channelName,
+    });
+  }
+
+  async trigger(event: PusherEvent) {
+    if (event.channelName != this.channelName) {
+      throw 'Event is not for this channel';
+    }
+    return Pusher.getInstance().trigger(event);
+  }
+}
+
+export class Pusher {
+  private static instance: Pusher;
+  private eventEmitter = new NativeEventEmitter(PusherWebsocketReactNative);
+
+  public channels = new Map<String, PusherChannel>();
+  public connectionState = 'DISCONNECTED';
+
+  private constructor() {}
+
+  static getInstance(): Pusher {
+    if (!Pusher.instance) {
+      Pusher.instance = new Pusher();
+    }
+    return Pusher.instance;
+  }
+
+  public addListener(event: string, callback: (event: any) => void) {
+    return this.eventEmitter.addListener(event, callback);
+  }
+
+  public init(args: {
+    apiKey: string;
+    cluster: string;
+    authEndpoint?: string;
+    useTLS?: boolean;
+    activityTimeout?: Number;
+    pongTimeout?: Number;
+    maxReconnectionAttempts?: Number;
+    maxReconnectGapInSeconds?: Number;
+    proxy?: string;
+    onConnectionStateChange?: (
+      currentState: string,
+      previousState: string
+    ) => void;
+    onAuthorizer?: (channelName: string, socketId: string, options: any) => any;
+    onError?: (message: string, code: Number, e: any) => void;
+    onEvent?: (event: PusherEvent) => void;
+    onSubscriptionSucceeded?: (channelName: string, data: any) => void;
+    onSubscriptionError?: (message: string, e: any) => void;
+    onDecryptionFailure?: (eventName: string, reason: string) => void;
+    onMemberAdded?: (channelName: string, member: PusherMember) => void;
+    onMemberRemoved?: (channelName: string, member: PusherMember) => void;
+  }) {
+    this.addListener('onConnectionStateChange', (event: any) => {
+      this.connectionState = event.currentState.toUpperCase();
+      args.onConnectionStateChange?.(
+        event.currentState.toUpperCase(),
+        event.previousState.toUpperCase()
+      );
+    });
+
+    if (args.onError) {
+      this.addListener('onError', (event: any) =>
+        args.onError!(event.message, event.code, event.error)
+      );
+    }
+
+    if (args.onEvent) {
+      this.addListener('onEvent', (event: any) => {
+        const channelName = event.channelName;
+        const eventName = event.eventName;
+        const data = event.data;
+        const userId = event.userId;
+        const channel = this.channels.get(channelName);
+
+        switch (eventName) {
+          case 'pusher_internal:subscription_succeeded':
+            // Depending on the platform implementation we get json or a Map.
+            var decodedData = data instanceof Object ? data : JSON.parse(data);
+            for (const _userId in decodedData?.presence?.hash) {
+              const userInfo = decodedData?.presence?.hash[_userId];
+              var member = new PusherMember(_userId, userInfo);
+              channel?.members.add(member);
+              if (_userId == userId) {
+                channel!.me = member;
+              }
+            }
+            args.onSubscriptionSucceeded?.(channelName, decodedData);
+            channel?.onSubscriptionSucceeded?.(decodedData);
+            break;
+          default:
+            const pusherEvent = new PusherEvent(event);
+            args.onEvent!(pusherEvent);
+            channel?.onEvent?.(pusherEvent);
+            break;
+        }
+      });
+    }
+
+    return PusherWebsocketReactNative.init({
+      apiKey: args.apiKey,
+      cluster: args.cluster,
+      authEndpoint: args.authEndpoint,
+      useTLS: args.useTLS,
+      activityTimeout: args.activityTimeout,
+      pongTimeout: args.pongTimeout,
+      maxReconnectionAttempts: args.maxReconnectionAttempts,
+      maxReconnectGapInSeconds: args.maxReconnectGapInSeconds,
+      authorizer: args.onAuthorizer ? true : false,
+      proxy: args.proxy,
+    });
+  }
+
+  public async connect() {
+    return await PusherWebsocketReactNative.connect();
+  }
+
+  public async disconnect() {
+    return await PusherWebsocketReactNative.disconnect();
+  }
+
+  async subscribe(args: {
+    channelName: string;
+    onSubscriptionSucceeded?: (data: any) => void;
+    onSubscriptionError?: (error: any) => void;
+    onMemberAdded?: (member: PusherMember) => void;
+    onMemberRemoved?: (member: PusherMember) => void;
+    onEvent?: (event: PusherEvent) => void;
+  }) {
+    const channel = new PusherChannel(args);
+    await PusherWebsocketReactNative.subscribe(args.channelName);
+    this.channels.set(args.channelName, channel);
+    return channel;
+  }
+
+  public async unsubscribe({ channelName }: { channelName: string }) {
+    this.channels.delete(channelName);
+    await PusherWebsocketReactNative.unsubscribe({ channelName });
+  }
+
+  public async trigger(event: PusherEvent) {
+    if (
+      event.channelName.startsWith('private-') ||
+      event.channelName.startsWith('presence-')
+    ) {
+      await PusherWebsocketReactNative.trigger(
+        event.channelName,
+        event.eventName,
+        event.data,
+      );
+    } else {
+      throw 'Trigger event is only for private/presence channels';
+    }
+  }
+
+  public async getSocketId() {
+    return await PusherWebsocketReactNative.getSocketId();
+  }
+
+  public getChannel(channelName: string): PusherChannel {
+    return this.channels.get(channelName)!;
+  }
 }
