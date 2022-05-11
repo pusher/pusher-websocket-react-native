@@ -55,7 +55,7 @@ export class PusherMember {
 
 export class PusherChannel {
   channelName: string;
-  members = new Set<PusherMember>();
+  members = new Map<String, PusherMember>();
   me?: PusherMember;
   onSubscriptionSucceeded?: (data: any) => void;
   onEvent?: (event: any) => void;
@@ -142,43 +142,59 @@ export class Pusher {
       );
     });
 
-    if (args.onError) {
-      this.addListener('onError', (event: any) =>
-        args.onError!(event.message, event.code, event.error)
-      );
-    }
+    this.addListener('onError', (event: any) =>
+      args.onError?.(event.message, event.code, event.error)
+    );
 
-    if (args.onEvent) {
-      this.addListener('onEvent', (event: any) => {
-        const channelName = event.channelName;
-        const eventName = event.eventName;
-        const data = event.data;
-        const userId = event.userId;
-        const channel = this.channels.get(channelName);
+    this.addListener('onEvent', (event: any) => {
+      const channelName = event.channelName;
+      const eventName = event.eventName;
+      const data = event.data;
+      const userId = event.userId;
+      const channel = this.channels.get(channelName);
 
-        switch (eventName) {
-          case 'pusher_internal:subscription_succeeded':
-            // Depending on the platform implementation we get json or a Map.
-            var decodedData = data instanceof Object ? data : JSON.parse(data);
-            for (const _userId in decodedData?.presence?.hash) {
-              const userInfo = decodedData?.presence?.hash[_userId];
-              var member = new PusherMember(_userId, userInfo);
-              channel?.members.add(member);
-              if (_userId == userId) {
-                channel!.me = member;
-              }
+      switch (eventName) {
+        case 'pusher_internal:subscription_succeeded':
+          // Depending on the platform implementation we get json or a Map.
+          var decodedData = data instanceof Object ? data : JSON.parse(data);
+          for (const _userId in decodedData?.presence?.hash) {
+            const userInfo = decodedData?.presence?.hash[_userId];
+            var member = new PusherMember(_userId, userInfo);
+            channel?.members.set(member.userId, member);
+            if (_userId == userId) {
+              channel!.me = member;
             }
-            args.onSubscriptionSucceeded?.(channelName, decodedData);
-            channel?.onSubscriptionSucceeded?.(decodedData);
-            break;
-          default:
-            const pusherEvent = new PusherEvent(event);
-            args.onEvent!(pusherEvent);
-            channel?.onEvent?.(pusherEvent);
-            break;
-        }
-      });
-    }
+          }
+          args.onSubscriptionSucceeded?.(channelName, decodedData);
+          channel?.onSubscriptionSucceeded?.(decodedData);
+          break;
+        default:
+          const pusherEvent = new PusherEvent(event);
+          args.onEvent?.(pusherEvent);
+          channel?.onEvent?.(pusherEvent);
+          break;
+      }
+    });
+
+    this.addListener('onMemberAdded', (event) => {
+      const user = event.user;
+      const channelName = event.channelName;
+      var member = new PusherMember(user.userId, user.userInfo);
+      const channel = this.channels.get(channelName);
+      channel?.members.set(member.userId, member);
+      args.onMemberAdded?.(channelName, member);
+      channel?.onMemberAdded?.(member);
+    });
+
+    this.addListener('onMemberRemoved', (event) => {
+      const user = event.user;
+      const channelName = event.channelName;
+      var member = new PusherMember(user.userId, user.userInfo);
+      const channel = this.channels.get(channelName);
+      channel?.members.delete(member.userId);
+      args.onMemberRemoved?.(channelName, member);
+      channel?.onMemberRemoved?.(member);
+    });
 
     return PusherWebsocketReactNative.init({
       apiKey: args.apiKey,
@@ -211,8 +227,8 @@ export class Pusher {
     onEvent?: (event: PusherEvent) => void;
   }) {
     const channel = new PusherChannel(args);
-    await PusherWebsocketReactNative.subscribe(args.channelName);
     this.channels.set(args.channelName, channel);
+    await PusherWebsocketReactNative.subscribe(args.channelName);
     return channel;
   }
 
@@ -229,7 +245,7 @@ export class Pusher {
       await PusherWebsocketReactNative.trigger(
         event.channelName,
         event.eventName,
-        event.data,
+        event.data
       );
     } else {
       throw 'Trigger event is only for private/presence channels';

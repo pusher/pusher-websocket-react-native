@@ -257,12 +257,13 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
 
   override fun userSubscribed(channelName: String, user: User) {
     // Log.i(TAG, "A new user joined channel [$channelName]: ${user.id}, ${user.info}")
+    val gson = Gson()
     emitEvent(
       "onMemberAdded", mapOf(
         "channelName" to channelName,
         "user" to mapOf(
           "userId" to user.id,
-          "userInfo" to user.info
+          "userInfo" to gson.fromJson(user.info, Map::class.java)
         )
       )
     )
@@ -270,12 +271,13 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
 
   override fun userUnsubscribed(channelName: String, user: User) {
     // Log.i(TAG, "A user left channel [$channelName]: ${user.id}, ${user.info}")
+    val gson = Gson()
     emitEvent(
       "onMemberRemoved", mapOf(
         "channelName" to channelName,
         "user" to mapOf(
           "userId" to user.id,
-          "userInfo" to user.info
+          "userInfo" to gson.fromJson(user.info, Map::class.java)
         )
       )
     )

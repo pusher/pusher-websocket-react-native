@@ -8,6 +8,7 @@ import {
   Button,
   Image,
   ScrollView,
+  FlatList,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -24,10 +25,9 @@ export default function App() {
   const [apiKey, onChangeApiKey] = React.useState('');
   const [cluster, onChangeCluster] = React.useState('');
   const [channelName, onChangeChannelName] = React.useState('');
-
   const [eventName, onChangeEventName] = React.useState('');
   const [eventData, onChangeEventData] = React.useState('');
-
+  const [members, onChangeMembers] = React.useState(new Array<PusherMember>());
   const [logText, setLog] = React.useState('');
 
   const log = async (line: string) => {
@@ -95,7 +95,9 @@ export default function App() {
     log(
       `onSubscriptionSucceeded: ${channelName} data: ${JSON.stringify(data)}`
     );
-    const me = pusher.getChannel(channelName)?.me;
+    const channel: PusherChannel = pusher.getChannel(channelName);
+    const me = channel.me;
+    onChangeMembers([...channel.members.values()]);
     log(`Me: ${me}`);
   };
 
@@ -109,10 +111,14 @@ export default function App() {
 
   const onMemberAdded = (channelName: string, member: PusherMember) => {
     log(`onMemberAdded: ${channelName} user: ${member}`);
+    const channel: PusherChannel = pusher.getChannel(channelName);
+    onChangeMembers([...channel.members.values()]);
   };
 
   const onMemberRemoved = (channelName: string, member: PusherMember) => {
     log(`onMemberRemoved: ${channelName} user: ${member}`);
+    const channel: PusherChannel = pusher.getChannel(channelName);
+    onChangeMembers([...channel.members.values()]);
   };
 
   const onAuthorizer = (
@@ -141,69 +147,78 @@ export default function App() {
       log('ERROR: ' + e);
     }
   };
+
   return (
     <SafeAreaView style={styles.container}>
+      <Image style={styles.image} source={require('./pusher.png')} />
+      <View>
+        <Text>
+          {pusher.connectionState === 'DISCONNECTED'
+            ? 'Pusher Channels React Native Example'
+            : channelName}
+        </Text>
+      </View>
+      {pusher.connectionState !== 'CONNECTED' ? (
+        <>
+          <TextInput
+            style={styles.input}
+            onChangeText={onChangeApiKey}
+            placeholder="API Key"
+            value={apiKey}
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={onChangeCluster}
+            value={cluster}
+            placeholder="Cluster"
+            keyboardType="default"
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={onChangeChannelName}
+            value={channelName}
+            placeholder="Channel"
+            keyboardType="default"
+          />
+          <Button
+            title="Connect"
+            onPress={connect}
+            disabled={!Boolean(apiKey && cluster && channelName)}
+          />
+        </>
+      ) : (
+        <>
+          <FlatList
+            style={styles.list}
+            data={members}
+            renderItem={({ item }) => (
+              <Text style={styles.listItem}>
+                {JSON.stringify(item.userInfo)} {item.userId}
+              </Text>
+            )}
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={onChangeEventName}
+            value={eventName}
+            placeholder="Event"
+            keyboardType="default"
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={onChangeEventData}
+            value={eventData}
+            placeholder="Data"
+            keyboardType="default"
+          />
+          <Button
+            title="Trigger Event"
+            onPress={trigger}
+            disabled={!Boolean(eventName)}
+          />
+        </>
+      )}
       <ScrollView>
-        <Image style={styles.image} source={require('./pusher.png')} />
-        <View>
-          <Text>
-            {pusher.connectionState === 'DISCONNECTED'
-              ? 'Pusher Channels React Native Example'
-              : channelName}
-          </Text>
-        </View>
-
-        {pusher.connectionState !== 'CONNECTED' ? (
-          <>
-            <TextInput
-              style={styles.input}
-              onChangeText={onChangeApiKey}
-              placeholder="API Key"
-              value={apiKey}
-            />
-            <TextInput
-              style={styles.input}
-              onChangeText={onChangeCluster}
-              value={cluster}
-              placeholder="Cluster"
-              keyboardType="default"
-            />
-            <TextInput
-              style={styles.input}
-              onChangeText={onChangeChannelName}
-              value={channelName}
-              placeholder="Channel"
-              keyboardType="default"
-            />
-            <Button
-              title="Connect"
-              onPress={connect}
-              disabled={!Boolean(apiKey && cluster && channelName)}
-            />
-          </>
-        ) : (
-          <>
-            <TextInput
-              style={styles.input}
-              onChangeText={onChangeEventName}
-              value={eventName}
-              placeholder="Event"
-              keyboardType="default"
-            />
-            <TextInput
-              style={styles.input}
-              onChangeText={onChangeEventData}
-              value={eventData}
-              placeholder="Data"
-              keyboardType="default"
-            />
-            <Button
-              title="Trigger Event"
-              onPress={trigger}
-              disabled={!Boolean(eventName)}
-            />
-          </>
-        )}
         <Text>{logText}</Text>
       </ScrollView>
     </SafeAreaView>
@@ -226,5 +241,13 @@ const styles = StyleSheet.create({
     marginVertical: 12,
     borderWidth: 1,
     padding: 10,
+  },
+  list: {
+    height: 100,
+    borderWidth: 1,
+    flexGrow: 0,
+  },
+  listItem: {
+    borderWidth: 1,
   },
 });
