@@ -11,13 +11,21 @@ class PusherWebsocketReactNative: RCTEventEmitter, PusherDelegate, Authorizer {
     }
     
     override func supportedEvents() -> [String]! {
-        return ["onIncrement"]
+        return ["onConnectionStateChange",
+                "onSubscriptionError",
+                "onAuthorizer",
+                "onError",
+                "onDecryptionFailure",
+                "onEvent",
+                "onMemberAdded",
+                "onMemberRemoved"]
     }
     
     func callback(name:String, body:Any) -> Void {
         self.sendEvent(withName:name, body:body)
     }
-  
+    
+    @objc(initialize:withResolver:withRejecter:)
     func initialize(args:[String: Any], resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
         if (pusher == nil) {
             var authMethod:AuthMethod = .noMethod
