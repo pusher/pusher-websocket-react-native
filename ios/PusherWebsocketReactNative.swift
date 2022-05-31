@@ -2,13 +2,8 @@ import PusherSwift
 import Foundation
 
 @objc(PusherWebsocketReactNative)
-class PusherWebsocketReactNative: RCTEventEmitter, PusherDelegate, Authorizer {
+@objcMembers class PusherWebsocketReactNative: RCTEventEmitter, PusherDelegate, Authorizer {
     private var pusher: Pusher!
-    
-    @objc(multiply:withB:withResolver:withRejecter:)
-    func multiply(a: Float, b: Float, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) -> Void {
-        resolve(a*b)
-    }
     
     override func supportedEvents() -> [String]! {
         return ["onConnectionStateChange",
@@ -25,8 +20,7 @@ class PusherWebsocketReactNative: RCTEventEmitter, PusherDelegate, Authorizer {
         self.sendEvent(withName:name, body:body)
     }
     
-    @objc(initialize:withResolver:withRejecter:)
-    func initialize(args:[String: Any], resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
+    func initialize(_ args:[String: Any], resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
         if (pusher == nil) {
             var authMethod:AuthMethod = .noMethod
             if args["authEndpoint"] is String {
@@ -88,7 +82,7 @@ class PusherWebsocketReactNative: RCTEventEmitter, PusherDelegate, Authorizer {
         }
     }
     
-    @objc override static func requiresMainQueueSetup() -> Bool {
+    override static func requiresMainQueueSetup() -> Bool {
         return false
     }
     
@@ -153,17 +147,17 @@ class PusherWebsocketReactNative: RCTEventEmitter, PusherDelegate, Authorizer {
         )
     }
     
-    func connect(resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
+    public func connect(_ resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
         pusher.connect()
         resolve(nil)
     }
     
-    func disconnect(resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
+    public func disconnect(_ resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
         pusher.disconnect()
         resolve(nil)
     }
     
-    func getSocketId() -> String? {
+    public func getSocketId() -> String? {
         return pusher.connection.socketId
     }
     
@@ -186,7 +180,7 @@ class PusherWebsocketReactNative: RCTEventEmitter, PusherDelegate, Authorizer {
         )
     }
     
-    func subscribe(channelName:String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
+    func subscribe(_ channelName:String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
         if channelName.hasPrefix("presence-") {
             let onMemberAdded:(PusherPresenceChannelMember) -> () = { user in
                 self.callback(name:"onMemberAdded", body: [
@@ -211,12 +205,12 @@ class PusherWebsocketReactNative: RCTEventEmitter, PusherDelegate, Authorizer {
         resolve(nil)
     }
     
-    func unsubscribe(channelName:String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
+    func unsubscribe(_ channelName:String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
         pusher.unsubscribe(channelName)
         resolve(nil)
     }
     
-    func trigger(channelName:String, eventName:String, data:Any, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
+    func trigger(_ channelName:String, eventName:String, data:Any, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
         if let channel = pusher.connection.channels.find(name: channelName) {
             channel.trigger(eventName: eventName, data: data)
         }
