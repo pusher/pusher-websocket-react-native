@@ -40,7 +40,7 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
     }
 
     if (params is String) {
-      jsModule.emit(eventName, params as String)
+      jsModule.emit(eventName, params)
     }
     // val map =
 
@@ -74,15 +74,15 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
         val options = PusherOptions()
         if (arguments.hasKey("cluster")) options.setCluster(arguments.getString("cluster"))
         if (arguments.hasKey("useTLS")) options.isUseTLS =
-          arguments.getBoolean("useTLS")!!
+          arguments.getBoolean("useTLS")
         if (arguments.hasKey("activityTimeout")) options.activityTimeout =
-          arguments.getInt("activityTimeout")!! as Long
+          arguments.getInt("activityTimeout") as Long
         if (arguments.hasKey("pongTimeout")) options.pongTimeout =
-          arguments.getInt("pongTimeout")!! as Long
+          arguments.getInt("pongTimeout") as Long
         if (arguments.hasKey("maxReconnectionAttempts")) options.maxReconnectionAttempts =
-          arguments.getInt("maxReconnectionAttempts")!!
+          arguments.getInt("maxReconnectionAttempts")
         if (arguments.hasKey("maxReconnectGapInSeconds")) options.maxReconnectGapInSeconds =
-          arguments.getInt("maxReconnectGapInSeconds")!!
+          arguments.getInt("maxReconnectGapInSeconds")
         if (arguments.hasKey("authEndpoint")) options.authorizer =
           HttpAuthorizer(arguments.getString("authEndpoint"))
         if (arguments.hasKey("authorizer") && arguments.getBoolean("authorizer")) options.authorizer = this
