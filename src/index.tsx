@@ -196,7 +196,7 @@ export class Pusher {
       channel?.onMemberRemoved?.(member);
     });
 
-    return PusherWebsocketReactNative.init({
+    return PusherWebsocketReactNative.initialize({
       apiKey: args.apiKey,
       cluster: args.cluster,
       authEndpoint: args.authEndpoint,

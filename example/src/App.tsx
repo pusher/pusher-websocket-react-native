@@ -164,6 +164,7 @@ export default function App() {
             style={styles.input}
             onChangeText={onChangeApiKey}
             placeholder="API Key"
+            autoCapitalize="none"
             value={apiKey}
           />
           <TextInput
@@ -171,6 +172,7 @@ export default function App() {
             onChangeText={onChangeCluster}
             value={cluster}
             placeholder="Cluster"
+            autoCapitalize="none"
             keyboardType="default"
           />
           <TextInput
@@ -178,6 +180,7 @@ export default function App() {
             onChangeText={onChangeChannelName}
             value={channelName}
             placeholder="Channel"
+            autoCapitalize="none"
             keyboardType="default"
           />
           <Button
@@ -202,6 +205,7 @@ export default function App() {
             onChangeText={onChangeEventName}
             value={eventName}
             placeholder="Event"
+            autoCapitalize="none"
             keyboardType="default"
           />
           <TextInput
@@ -209,6 +213,7 @@ export default function App() {
             onChangeText={onChangeEventData}
             value={eventData}
             placeholder="Data"
+            autoCapitalize="none"
             keyboardType="default"
           />
           <Button

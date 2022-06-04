@@ -10,10 +10,14 @@ Pod::Spec.new do |s|
   s.license      = package["license"]
   s.authors      = package["author"]
 
-  s.platforms    = { :ios => "10.0" }
+  s.platforms    = { :ios => "13.0" }
   s.source       = { :git => "https://github.com/pusher/pusher-websocket-react-native.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm,swift}"
-
-  s.dependency "React-Core"
+  s.requires_arc = true
+  s.dependency 'PusherSwift', '~> 10.0.0'
+  s.dependency 'React'
+  s.framework    = 'Network'
+  s.swift_version = '5'
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
 end
