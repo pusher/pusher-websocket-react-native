@@ -24,7 +24,7 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   Authorizer {
 
   private var pusher: Pusher? = null
-  private val TAG = "PusherWebsocketReactNative"
+  private val TAG = "PusherReactNative"
   private var authorizerMutex: Semaphore? = null
   private var authorizerResult: String? = null
 
