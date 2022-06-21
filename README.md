@@ -112,8 +112,8 @@ pusher-websocket-java dependency.
 
 ## Initialization
 
-The Pusherclass is a singleton, that
-can be instantiated with `getInstance()`. Then you need to initialize the client with a number of configuration options, here is a quick example with a number of callbacks options:
+The Pusherclass is a singleton that
+can be instantiated with `getInstance()`. Then you need to initialize the client with several configuration options. Here is a quick example with several callbacks options:
 
 ```typescript
 import {
@@ -149,12 +149,12 @@ try {
 ```
 
 After calling `init(...)` you can connect to the Pusher servers.
-You can subscribe to channels before calling `connect()`
+You can subscribe to channels before calling `connect()`.
 
 ## Configuration
 
-There are a number of configuration parameters which can be set for the Pusher client. The following table
-describes for which platform the parameter is available:
+There are a few configuration parameters which can be set for the Pusher client. The following table
+describes available parameters for each platform:
 
 | parameter                | Android | iOS |
 | ------------------------ | ------- | --- |
@@ -170,7 +170,7 @@ describes for which platform the parameter is available:
 
 #### `activityTimeout (double)`
 
-After this time (in seconds) without any messages received from the server, a ping message will be sent to check if the connection is still working; the default value is supplied by the server, low values will result in unnecessary traffic.
+If no messages are received after this time period (in seconds),  the ping message is sent to check if the connection is still working. The server supplies the default value, low values result in unnecessary traffic.
 
 #### `apiKey (string)`
 
@@ -178,7 +178,7 @@ You can get your `API_KEY` and `API_CLUSTER` from the [Pusher Channels dashboard
 
 #### `authParams (Map)`
 
-Allows passing additional data to authorizers. Supports query string params and headers (AJAX only). For example, following will pass `foo=bar` via the query string and `baz: boo` via headers:
+Allows passing additional data to authorizers. Supports query string params and headers (AJAX only). For example, the following will pass `foo=bar` via the query string and `baz: boo` via headers:
 
 ```typescript
 const pusher = Pusher.getInstance();
@@ -192,11 +192,11 @@ await pusher.init(
 });
 ```
 
-Additional parameters to be sent when the channel authentication endpoint is called. When using [ajax authentication](https://pusher.com/docs/authenticating_users#ajax_authentication) the parameters are passed as additional `POST` parameters. When using [jsonp authentication](http://pusher.com/docs/authenticating_users#jsonp_authentication) the parameters are passed as `GET` parameters. This can be useful with web application frameworks that guard against [CSRF (Cross-site request forgery)](http://en.wikipedia.org/wiki/Cross-site_request_forgery).
+Additional parameters are to be sent when the channel authentication endpoint is called. When using [ajax authentication](https://pusher.com/docs/authenticating_users#ajax_authentication) the parameters are passed as additional `POST` parameters. When using [jsonp authentication](http://pusher.com/docs/authenticating_users#jsonp_authentication) the parameters are passed as `GET` parameters. This can be useful with web application frameworks that guard against [CSRF (Cross-site request forgery)](http://en.wikipedia.org/wiki/Cross-site_request_forgery).
 
 CSRF
 
-If you require a CSRF header for incoming requests to the private channel authentication endpoint on your server, you should add a CSRF token to the `auth` hash under `headers`. This is applicable to frameworks which apply CSRF protection by default.
+If you require a CSRF header for incoming requests to the private channel authentication endpoint on your server, you should add a CSRF token to the `auth` hash under `headers`. This applies to frameworks which use CSRF protection by default.
 
 ```typescript
 const pusher = await pusher.init(
@@ -213,18 +213,16 @@ const pusher = await pusher.init(
 
 The authEndpoint provides a URL that the
 Pusher client will call to authorize users
-for a presence channel. On how to implement
-an authorization service please check here:
-
-https://pusher.com/docs/channels/server_api/authenticating-users/
+for a presence channel. Learn [how to implement
+an authorization service](https://pusher.com/docs/channels/server_api/authenticating-users/)
 
 #### `cluster (string)`
 
-Specifies the cluster that pusher-js should connect to. [If you'd like to see a full list of our clusters, click here](https://pusher.com/docs/clusters). If you do not specify a cluster, `mt1` will be used by default.
+Specifies the cluster that pusher-js should connect to. Here's the full list of [Pusher clusters](https://pusher.com/docs/clusters). If you do not specify a cluster, `mt1` will be used by default.
 
 #### `useTLS (bool)`
 
-Whether or not you'd like to use TLS encrypted transport or not, default is `true`
+Whether or not you would like to use TLS encrypted transport or not, default is `true`.
 
 ## Event Callback parameters
 
@@ -238,8 +236,8 @@ void onEvent(PusherEvent event) {
 }
 ```
 
-Called when a event is received by the client.
-The global event handler will trigger on events from any channel.
+Called when an event is received by the client.
+The global event handler will trigger events from any channel.
 
 #### `onSubscriptionSucceeded`
 
@@ -249,7 +247,7 @@ void onSubscriptionSucceeded(channelName:string, data:any) {
 }
 ```
 
-use this if you want to be informed of when a channel has successfully been subscribed to, which is useful if you want to perform actions that are only relevant after a subscription has succeeded. For example querying the members for presence channel.
+Use this if you want to be informed when a channel has successfully been subscribed to. This is useful if you want to perform actions that are only relevant after a subscription has succeeded. For example, querying the members for presence channel.
 
 #### `onSubscriptionError`
 
@@ -259,7 +257,7 @@ void onSubscriptionError(message:string, e:any) {
 }
 ```
 
-use this if you want to be informed of a failed subscription attempt, which you could use, for example, to then attempt another subscription or make a call to a service you use to track errors.
+Use this if you want to be informed of a failed subscription attempt. You can use this to re-attempt the subscription or make a call to a service you use to track errors.
 
 #### `onDecryptionFailure`
 
@@ -268,8 +266,7 @@ void onDecryptionFailure(event:string, string reason:string) {
   console.log(`onDecryptionFailure: ${event} reason: ${reason}`);
 }
 ```
-
-only used with private encrypted channels - use this if you want to be notified if any messages fail to decrypt.
+Used with private channels only. Use this if you want to be notified if any messages fail to decrypt.
 
 #### `onMemberAdded`
 
@@ -289,15 +286,14 @@ void onMemberRemoved(channelName:string, member:PusherMember) {
 }
 ```
 
-Called when a member is removed to the presence channel.
+Called when a member is removed from the presence channel.
 
 #### `onAuthorizer`
 
-> :warning: Currently on web release/profile mode this doesn't work, we're still investigating this.
+> :warning: Currently on web release/profile mode. This doesn't work, we're still investigating this.
 
-When passing the `onAuthorizer()` callback to the `init()` method, this callback is called to request auth information. For more information on how
-to generate the correct information, please look here:
-https://pusher.com/docs/channels/library_auth_reference/auth-signatures/
+When passing the `onAuthorizer()` callback to the `init()` method, this callback is called to request auth information. Learn how
+to [generate the correct auth signatures](https://pusher.com/docs/channels/library_auth_reference/auth-signatures/)
 
 ```typescript
 dynamic onAuthorizer(string channelName, string socketId, dynamic options) async {
@@ -317,14 +313,14 @@ void onConnectionStateChange(currentState:string, previousState:string) {
 }
 ```
 
-use this if you want to use connection state changes to perform different actions / UI updates
-The different states that the connection can be in are:
+Use this if you want to use connection state changes to perform different actions/UI updates.
+The connection can have different states, as follows:
 
-- `CONNECTING` - the connection is about to attempt to be made
-- `CONNECTED` - the connection has been successfully made
-- `DISCONNECTING` - the connection has been instructed to disconnect and it is just about to do so
-- `DISCONNECTED` - the connection has disconnected and no attempt will be made to reconnect automatically
-- `RECONNECTING` - an attempt is going to be made to try and re-establish the connection
+- `CONNECTING` - Currently attempting to establish a connection
+- `CONNECTED` - Connection successfully established 
+- `DISCONNECTING` - Connection is about to be disconnected.
+- `DISCONNECTED` - Connection has been disconnected with no attempts to automatically reconnect. 
+- `RECONNECTING` - Atempting to re-establish the connection.
 
 #### `onError`
 
@@ -334,13 +330,13 @@ void onError(message:string, code:int, e:any) {
 }
 ```
 
-use this if you want to be informed of errors received from Pusher Channels e.g. `Application is over connection quota`. You can find some of the possible errors listed [here](https://pusher.com/docs/channels/library_auth_reference/pusher-websockets-protocol#error-codes).
+Use this if you want to be informed about errors received from Pusher Channels. For example, `Application is over connection quota`. For more details, refer to [Pusher error codes](https://pusher.com/docs/channels/library_auth_reference/pusher-websockets-protocol#error-codes).
 
 ## Connection handling
 
 ### Connecting
 
-To connect to the Pusher network, just call the `connect()` method.
+To connect to the Pusher network, call the `connect()` method.
 
 ```typescript
 await pusher.connect();
@@ -348,7 +344,7 @@ await pusher.connect();
 
 ### Disconnecting
 
-To disconnect to the Pusher network, just call the `disconnect()` method.
+To disconnect from the Pusher network, just call the `disconnect()` method.
 
 ```typescript
 await pusher.disconnect();
@@ -356,13 +352,13 @@ await pusher.disconnect();
 
 ### Reconnection
 
-There are three main ways in which a disconnection can occur:
+There are three main ways why a connection could be disconnected:
 
-- The client explicitly calls disconnect and a close frame is sent over the websocket connection
-- The client experiences some form of network degradation which leads to a heartbeat (ping/pong) message being missed and thus the client disconnects
-- The Pusher server closes the websocket connection; typically this will only occur during a restart of the Pusher socket servers and an almost immediate reconnection should occur
+- The client explicitly calls disconnect and a close frame is sent over the websocket connection.
+- The client experiences some form of network degradation which leads to a heartbeat (ping/pong) message being missed and thus the client disconnects.
+- The Pusher server closes the websocket connection; typically this will only occur during a restart of the Pusher socket servers and almost immediatelly it will reconnect.
 
-In the case of the first type of disconnection the library will (as you'd hope) not attempt a reconnection.
+In the case of the first type of disconnection, the library will (as you would hope) not attempt to reconnect.
 
 ## Subscribing
 
@@ -382,7 +378,7 @@ Private channels are created in exactly the same way as public channels, except 
 const myPrivateChannel = await pusher.subscribe({channelName: "private-my-channel"})
 ```
 
-Subscribing to private channels involves the client being authenticated. See the [Configuration](#configuration) section for the authenticated channel example for more information.
+To subscribe to a private channel, the client needs to be authenticated. Refer to the [Configuration](#configuration) section for the authenticated channel example.
 
 ### Private encrypted channels
 
@@ -462,9 +458,9 @@ const myChannel = await pusher.subscribe(
 );
 ```
 
-Note that both private and presence channels require the user to be authenticated in order to subscribe to the channel. This authentication can either happen inside the library, if you configured your Pusher object with your app's secret, or an authentication request is made to an authentication endpoint that you provide, again when initializing your Pusher object.
+Note that both private and presence channels require the user to be authenticated to subscribe to the channel. This authentication can either happen inside the library if you configured your Pusher object with your app's secret, or an authentication request is made to an authentication endpoint that you provide, again when initializing your Pusher object.
 
-We recommend that you use an authentication endpoint over including your app's secret in your app in the vast majority of use cases. If you are completely certain that there's no risk to you including your app's secret in your app, for example if your app is just for internal use at your company, then it can make things easier than setting up an authentication endpoint.
+We recommend that you use an authentication endpoint over including your app's secret in your app in the vast majority of use cases. If you are completely certain that there's no risk to you including your app's secret in your app. For example, if your app is just for internal use at your company, then it can make things easier than setting up an authentication endpoint.
 
 ### Unsubscribing
 
@@ -476,11 +472,11 @@ await pusher.unsubscribe({channelName:"my-channel"});
 
 ## Binding to events
 
-Events can be bound to at 2 levels; globally and per channel. There is an example of this below.
+Events can be bound to at two levels; globally and per channel. There is an example of this below.
 
 ### Per-channel events
 
-These are bound to a specific channel, and mean that you can reuse event names in different parts of your client application.
+These are bound to a specific channel. You can reuse event names in different parts of your client application.
 
 ```typescript
 const pusher = Pusher.getInstance();
@@ -557,13 +553,13 @@ Or on the global pusher instance:
 await pusher.trigger({channelName: "my-channel", eventName: "client-my-event", data: {"myName": "Bob"}});
 ```
 
-Events triggered by clients are called [client events](https://pusher.com/docs/channels/using_channels/events#triggering-client-events). Because they are being triggered from a client which may not be trusted there are a number of enforced rules when using them. Some of these rules include:
+Events triggered by clients are called [client events](https://pusher.com/docs/channels/using_channels/events#triggering-client-events). Because they are being triggered from a client which may not be trusted, there are a number of enforced rules when using them. Some of these rules include:
 
 - Event names must have a `client-` prefix
 - Rate limits
 - You can only trigger an event when the subscription has succeeded
 
-For full details see the [client events documentation](https://pusher.com/docs/channels/using_channels/events#triggering-client-events).
+For more details, refer to [client events](https://pusher.com/docs/channels/using_channels/events#triggering-client-events).
 
 ## Get a channel by name
 
@@ -584,8 +580,8 @@ const socketId = await pusher.getSocketId();
 ## Communication
 
 - If you have found a bug, please open an issue.
-- If you have a feature request, please open an issue.
-- If you want to contribute, please submit a pull request.
+- If you have a feature request, open an issue.
+- If you want to contribute, submit a pull request.
 
 ## Credits
 
@@ -593,4 +589,4 @@ Pusher is owned and maintained by [Pusher](https://pusher.com).
 
 ## License
 
-Pusher is released under the MIT license. See [LICENSE](https://github.com/pusher/pusher-websocket-react-native/blob/master/LICENSE) for details.
+Pusher is released under the MIT license. Refer to [LICENSE](https://github.com/pusher/pusher-websocket-react-native/blob/master/LICENSE) for more details.
