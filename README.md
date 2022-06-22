@@ -233,7 +233,7 @@ The following functions are callbacks that can be passed to the `init()` method.
 #### `onEvent`
 
 ```typescript
-void onEvent(PusherEvent event) {
+function onEvent(PusherEvent event) {
   console.log(`onEvent: ${event}`);
 }
 ```
@@ -244,7 +244,7 @@ The global event handler will trigger on events from any channel.
 #### `onSubscriptionSucceeded`
 
 ```typescript
-void onSubscriptionSucceeded(channelName:string, data:any) {
+function onSubscriptionSucceeded(channelName:string, data:any) {
   console.log(`onSubscriptionSucceeded: ${channelName} data: ${data}`);
 }
 ```
@@ -254,7 +254,7 @@ use this if you want to be informed of when a channel has successfully been subs
 #### `onSubscriptionError`
 
 ```typescript
-void onSubscriptionError(message:string, e:any) {
+function onSubscriptionError(message:string, e:any) {
   console.log(`onSubscriptionError: ${message} Exception: ${e}`);
 }
 ```
@@ -264,7 +264,7 @@ use this if you want to be informed of a failed subscription attempt, which you 
 #### `onDecryptionFailure`
 
 ```typescript
-void onDecryptionFailure(event:string, string reason:string) {
+function onDecryptionFailure(event:string, string reason:string) {
   console.log(`onDecryptionFailure: ${event} reason: ${reason}`);
 }
 ```
@@ -274,7 +274,7 @@ only used with private encrypted channels - use this if you want to be notified 
 #### `onMemberAdded`
 
 ```typescript
-void onMemberAdded(channelName:string, member:PusherMember) {
+function onMemberAdded(channelName:string, member:PusherMember) {
   console.log(`onMemberAdded: ${channelName} member: ${member}`);
 }
 ```
@@ -284,7 +284,7 @@ Called when a member is added to the presence channel.
 #### `onMemberRemoved`
 
 ```typescript
-void onMemberRemoved(channelName:string, member:PusherMember) {
+function onMemberRemoved(channelName:string, member:PusherMember) {
   console.log(`onMemberRemoved: ${channelName} member: ${member}`);
 }
 ```
@@ -293,18 +293,16 @@ Called when a member is removed to the presence channel.
 
 #### `onAuthorizer`
 
-> :warning: Currently on web release/profile mode this doesn't work, we're still investigating this.
-
 When passing the `onAuthorizer()` callback to the `init()` method, this callback is called to request auth information. For more information on how
 to generate the correct information, please look here:
 https://pusher.com/docs/channels/library_auth_reference/auth-signatures/
 
 ```typescript
-dynamic onAuthorizer(string channelName, string socketId, dynamic options) async {
+async function onAuthorizer(channelName:string, socketId:string, options:any):Promise<any> {
   return {
-    "auth": "foo:bar",
-    "channel_data": '{"user_id": 1}',
-    "shared_secret": "foobar"
+    auth: "foo:bar",
+    channel_data: '{"user_id": 1}',
+    shared_secret: "foobar"
   };
 }
 ```
@@ -312,7 +310,7 @@ dynamic onAuthorizer(string channelName, string socketId, dynamic options) async
 #### `onConnectionStateChange`
 
 ```typescript
-void onConnectionStateChange(currentState:string, previousState:string) {
+function onConnectionStateChange(currentState:string, previousState:string) {
   console.log(`Connection: ${currentState}`);
 }
 ```
@@ -329,7 +327,7 @@ The different states that the connection can be in are:
 #### `onError`
 
 ```typescript
-void onError(message:string, code:int, e:any) {
+function onError(message:string, code:int, e:any) {
   console.log(`onError: $message code: ${code} exception: ${e}`);
 }
 ```
