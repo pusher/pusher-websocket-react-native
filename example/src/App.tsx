@@ -121,10 +121,9 @@ export default function App() {
     onChangeMembers([...channel.members.values()]);
   };
 
-  const onAuthorizer = (
+  const onAuthorizer = async (
     channelName: string,
-    socketId: string,
-    options: any
+    socketId: string
   ) => {
     return {
       auth: 'foo:bar',

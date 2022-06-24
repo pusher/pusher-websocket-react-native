@@ -296,7 +296,7 @@ When passing the `onAuthorizer()` callback to the `init()` method, this callback
 to [generate the correct auth signatures](https://pusher.com/docs/channels/library_auth_reference/auth-signatures/)
 
 ```typescript
-async function onAuthorizer(channelName:string, socketId:string, options:any):Promise<any> {
+async function onAuthorizer(channelName:string, socketId:string):Promise<any> {
   return {
     auth: "foo:bar",
     channel_data: '{"user_id": 1}',
@@ -317,9 +317,9 @@ Use this if you want to use connection state changes to perform different action
 The connection can have different states, as follows:
 
 - `CONNECTING` - Currently attempting to establish a connection
-- `CONNECTED` - Connection successfully established 
+- `CONNECTED` - Connection successfully established
 - `DISCONNECTING` - Connection is about to be disconnected.
-- `DISCONNECTED` - Connection has been disconnected with no attempts to automatically reconnect. 
+- `DISCONNECTED` - Connection has been disconnected with no attempts to automatically reconnect.
 - `RECONNECTING` - Atempting to re-establish the connection.
 
 #### `onError`

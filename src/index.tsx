@@ -125,7 +125,7 @@ export class Pusher {
       currentState: string,
       previousState: string
     ) => void;
-    onAuthorizer?: (channelName: string, socketId: string, options: any) => any;
+    onAuthorizer?: (channelName: string, socketId: string) => any;
     onError?: (message: string, code: Number, e: any) => void;
     onEvent?: (event: PusherEvent) => void;
     onSubscriptionSucceeded?: (channelName: string, data: any) => void;
@@ -196,6 +196,15 @@ export class Pusher {
       channel?.onMemberRemoved?.(member);
     });
 
+    this.addListener('onAuthorizer', async ({ channelName, socketId }) => {
+      const data = await args.onAuthorizer?.(channelName, socketId);
+      await PusherWebsocketReactNative.onAuthorizer(
+        channelName,
+        socketId,
+        JSON.stringify(data)
+      );
+    });
+
     return PusherWebsocketReactNative.initialize({
       apiKey: args.apiKey,
       cluster: args.cluster,
@@ -234,7 +243,7 @@ export class Pusher {
 
   public async unsubscribe({ channelName }: { channelName: string }) {
     this.channels.delete(channelName);
-    await PusherWebsocketReactNative.unsubscribe({ channelName });
+    await PusherWebsocketReactNative.unsubscribe(channelName);
   }
 
   public async trigger(event: PusherEvent) {

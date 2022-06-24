@@ -42,9 +42,6 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
     if (params is String) {
       jsModule.emit(eventName, params)
     }
-    // val map =
-
-
   }
 
   @ReactMethod
@@ -160,9 +157,9 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun onAuthorizer(channelName: String, socketId: String?, data: Any?, promise: Promise) {
+  fun onAuthorizer(channelName: String, socketId: String?, data: String?, promise: Promise) {
     val gson = Gson()
-    authorizerResult = gson.toJson(data)
+    authorizerResult = data
     authorizerMutex?.release()
     promise.resolve(null)
   }
