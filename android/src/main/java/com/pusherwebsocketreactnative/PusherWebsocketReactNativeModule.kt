@@ -25,8 +25,8 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
 
   private var pusher: Pusher? = null
   private val TAG = "PusherReactNative"
-  private var authorizerMutex: Semaphore? = null
-  private var authorizerResult: String? = null
+  private val authorizerMutex = mutableMapOf<String, Semaphore>()
+  private val authorizerResult = mutableMapOf<String, String>()
 
   override fun getName(): String {
     return "PusherWebsocketReactNative"
@@ -144,23 +144,26 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
     promise.resolve(socketId)
   }
 
-  override fun authorize(channelName: String?, socketId: String?): String? {
+  override fun authorize(channelName: String, socketId: String): String? {
     emitEvent(
       "onAuthorizer", mapOf(
         "channelName" to channelName,
         "socketId" to socketId
       )
     )
-    authorizerMutex = Semaphore(0)
-    authorizerMutex!!.acquire()
-    return authorizerResult
+    val key = channelName + socketId
+    authorizerMutex[key] = Semaphore(0)
+    authorizerMutex[key]!!.acquire()
+    return authorizerResult.remove(key)
   }
 
   @ReactMethod
-  fun onAuthorizer(channelName: String, socketId: String?, data: String?, promise: Promise) {
+  fun onAuthorizer(channelName: String, socketId: String, data: String, promise: Promise) {
     val gson = Gson()
-    authorizerResult = data
-    authorizerMutex?.release()
+    val key = channelName + socketId
+    authorizerResult[key] = data
+    authorizerMutex[key]!!.release()
+    authorizerMutex.remove(key)
     promise.resolve(null)
   }
 
