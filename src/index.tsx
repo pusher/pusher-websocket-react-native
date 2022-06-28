@@ -38,22 +38,6 @@ export class PusherEvent {
   }
 }
 
-export class PusherError {
-  message: string;
-  error: string;
-
-  constructor(args: {
-    message: string;
-    error: string;
-  }) {
-    this.message = args.message;
-    this.error = args.error;
-  }
-  toString() {
-    return `{ message: ${this.message}, error: ${this.error} }`;
-  }
-}
-
 export class PusherMember {
   userId: string;
   userInfo: any;
