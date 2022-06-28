@@ -124,9 +124,8 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun trigger(channelName: String, eventName: String, data: String, promise: Promise) {
     when {
-      channelName.startsWith("private-") -> pusher!!.getPrivateChannel(channelName)
-        .trigger(eventName, data)
       channelName.startsWith("private-encrypted-") -> throw Exception("It's not currently possible to send a message using private encrypted channels.")
+      channelName.startsWith("private-") -> pusher!!.getPrivateChannel(channelName).trigger(eventName, data)
       channelName.startsWith("presence-") -> pusher!!.getPresenceChannel(channelName)
         .trigger(eventName, data)
       else -> throw Exception("Messages can only be sent to private and presence channels.")
