@@ -57,7 +57,7 @@ export default function App() {
       await pusher.init({
         apiKey,
         cluster,
-        authEndpoint: "https://channels-auth-example.herokuapp.com/pusher/auth",
+        // authEndpoint: '<YOUR ENDPOINT URI>',
         onConnectionStateChange,
         onError,
         onEvent,
