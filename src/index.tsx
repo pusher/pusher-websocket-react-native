@@ -38,6 +38,22 @@ export class PusherEvent {
   }
 }
 
+export class PusherError {
+  message: string;
+  error: string;
+
+  constructor(args: {
+    message: string;
+    error: string;
+  }) {
+    this.message = args.message;
+    this.error = args.error;
+  }
+  toString() {
+    return `{ message: ${this.message}, error: ${this.error} }`;
+  }
+}
+
 export class PusherMember {
   userId: string;
   userInfo: any;
@@ -168,11 +184,6 @@ export class Pusher {
           args.onSubscriptionSucceeded?.(channelName, decodedData);
           channel?.onSubscriptionSucceeded?.(decodedData);
           break;
-        case 'pusher:subscription_error':
-          const subscriptionErrorEvent = new PusherEvent(event);
-          let errorMessage = `Subscription error ${subscriptionErrorEvent.channelName}`
-          args.onSubscriptionError?.(errorMessage, subscriptionErrorEvent.data);
-          break;
         default:
           const pusherEvent = new PusherEvent(event);
           args.onEvent?.(pusherEvent);
@@ -208,6 +219,10 @@ export class Pusher {
         socketId,
         JSON.stringify(data)
       );
+    });
+
+    this.addListener('onSubscriptionError', async ({ error, message, code }) => {
+      args.onSubscriptionError?.(`${error}: ${code}`, message);
     });
 
     return PusherWebsocketReactNative.initialize({

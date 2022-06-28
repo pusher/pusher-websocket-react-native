@@ -17,6 +17,7 @@ import Foundation
     }
     
     func callback(name:String, body:Any) -> Void {
+        print("\(name)")
         self.sendEvent(withName:name, body:body)
     }
     
@@ -121,11 +122,16 @@ import Foundation
     }
     
     public func failedToSubscribeToChannel(name: String, response: URLResponse?, data: String?, error: NSError?) {
+        var code = ""
+        if let httpResponse = response as? HTTPURLResponse {
+            code = String(httpResponse.statusCode)
+        }
+
         self.callback(name:"onSubscriptionError", body:[
-            "message": (error != nil) ? error!.localizedDescription : "",
-            "error": error.debugDescription
-        ]
-        )
+            "message": (error != nil) ? error!.localizedDescription : ((data != nil) ? data! : ""),
+            "error": error.debugDescription,
+            "code": code
+        ])
     }
     
     public func receivedError(error: PusherError) {
