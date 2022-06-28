@@ -15,8 +15,7 @@ import {
   Pusher,
   PusherMember,
   PusherChannel,
-  PusherEvent,
-  PusherError,
+  PusherEvent
 } from 'pusher-websocket-react-native';
 
 export default function App() {
@@ -58,7 +57,7 @@ export default function App() {
       await pusher.init({
         apiKey,
         cluster,
-        // authEndpoint: '<YOUR ENDPOINT URI>',
+        authEndpoint: '<YOUR ENDPOINT URI>',
         onConnectionStateChange,
         onError,
         onEvent,
