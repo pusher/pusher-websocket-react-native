@@ -102,8 +102,8 @@ export default function App() {
     log(`Me: ${me}`);
   };
 
-  const onSubscriptionError = (error: PusherError) => {
-    log(`onSubscriptionError: ${error}`);
+  const onSubscriptionError = (channelName: string, message: string, e: any) => {
+    log(`onSubscriptionError: ${message}, channelName: ${channelName} e: ${e}`);
   };
 
   const onDecryptionFailure = (eventName: string, reason: string) => {

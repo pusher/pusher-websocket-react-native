@@ -134,7 +134,8 @@ import Foundation
         self.callback(name:"onSubscriptionError", body:[
             "message": (error != nil) ? error!.localizedDescription : ((data != nil) ? data! : error.debugDescription),
             "type": type,
-            "code": code
+            "code": code,
+            "channelName": name
         ])
     }
     
