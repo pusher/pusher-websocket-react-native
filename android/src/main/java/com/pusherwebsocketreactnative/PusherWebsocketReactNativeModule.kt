@@ -106,13 +106,9 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun subscribe(channelName: String, promise: Promise) {
     val channel = when {
+      channelName.startsWith("private-encrypted-") -> pusher!!.subscribePrivateEncrypted(channelName, this)
       channelName.startsWith("private-") -> pusher!!.subscribePrivate(channelName, this)
-      channelName.startsWith("private-encrypted-") -> pusher!!.subscribePrivateEncrypted(
-        channelName, this
-      )
-      channelName.startsWith("presence-") -> pusher!!.subscribePresence(
-        channelName, this
-      )
+      channelName.startsWith("presence-") -> pusher!!.subscribePresence(channelName, this)
       else -> pusher!!.subscribe(channelName, this)
     }
     channel.bindGlobal(this)
