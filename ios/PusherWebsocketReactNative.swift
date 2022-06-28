@@ -17,7 +17,6 @@ import Foundation
     }
     
     func callback(name:String, body:Any) -> Void {
-        print("\(name)")
         self.sendEvent(withName:name, body:body)
     }
     
