@@ -57,7 +57,7 @@ export default function App() {
       await pusher.init({
         apiKey,
         cluster,
-        // authEndpoint: '<YOUR ENDPOINT URI>',
+        authEndpoint: "https://channels-auth-example.herokuapp.com/pusher/auth",
         onConnectionStateChange,
         onError,
         onEvent,
@@ -80,7 +80,7 @@ export default function App() {
     currentState: string,
     previousState: string
   ) => {
-    log('onConnectionStateChange: ' + currentState);
+    log(`onConnectionStateChange. previousState=${previousState} newState=${currentState}`);
   };
 
   const onError = (message: string, code: Number, error: any) => {
@@ -101,7 +101,7 @@ export default function App() {
     log(`Me: ${me}`);
   };
 
-  const onSubscriptionError = (message: string, e: any) => {
+  const onSubscriptionError = (message: string, e?: any) => {
     log(`onSubscriptionError: ${message} Exception: ${e}`);
   };
 
@@ -138,6 +138,8 @@ export default function App() {
         ['EVENT', eventName],
         ['DATA', eventData],
       ]);
+
+      log(`${eventName} called`)
 
       await pusher.trigger(
         new PusherEvent({ channelName, eventName, data: eventData })

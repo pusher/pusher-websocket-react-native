@@ -168,6 +168,11 @@ export class Pusher {
           args.onSubscriptionSucceeded?.(channelName, decodedData);
           channel?.onSubscriptionSucceeded?.(decodedData);
           break;
+        case 'pusher:subscription_error':
+          const subscriptionErrorEvent = new PusherEvent(event);
+          let errorMessage = `Could not subscribe to ${subscriptionErrorEvent.channelName}`
+          args.onSubscriptionError?.(errorMessage, subscriptionErrorEvent.data);
+          break;
         default:
           const pusherEvent = new PusherEvent(event);
           args.onEvent?.(pusherEvent);
