@@ -252,8 +252,8 @@ Use this if you want to be informed when a channel has successfully been subscri
 #### `onSubscriptionError`
 
 ```typescript
-function onSubscriptionError(message:string, e:any) {
-  console.log(`onSubscriptionError: ${message} Exception: ${e}`);
+function onSubscriptionError(channelName: string, message:string, e:any) {
+  console.log(`onSubscriptionError: ${message} channelName: ${channelName} Exception: ${e}`);
 }
 ```
 
