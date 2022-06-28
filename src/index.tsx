@@ -38,6 +38,25 @@ export class PusherEvent {
   }
 }
 
+export class PusherError {
+  message: string;
+  type: string;
+  code: string;
+
+  constructor(args: {
+    message: string;
+    type: string;
+    code: string;
+  }) {
+    this.message = args.message;
+    this.type = args.type;
+    this.code = args.code
+  }
+  toString() {
+    return `{ message: ${this.message}, type: ${this.type}, code: ${this.code} }`;
+  }
+}
+
 export class PusherMember {
   userId: string;
   userInfo: any;
@@ -129,7 +148,7 @@ export class Pusher {
     onError?: (message: string, code: Number, e: any) => void;
     onEvent?: (event: PusherEvent) => void;
     onSubscriptionSucceeded?: (channelName: string, data: any) => void;
-    onSubscriptionError?: (message: string, e: any) => void;
+    onSubscriptionError?: (error: PusherError) => void;
     onDecryptionFailure?: (eventName: string, reason: string) => void;
     onMemberAdded?: (channelName: string, member: PusherMember) => void;
     onMemberRemoved?: (channelName: string, member: PusherMember) => void;
@@ -205,8 +224,9 @@ export class Pusher {
       );
     });
 
-    this.addListener('onSubscriptionError', async ({ error, message, code }) => {
-      args.onSubscriptionError?.(`${error}: ${code}`, message);
+    this.addListener('onSubscriptionError', async (error) => {
+      let pusherError = new PusherError(error)
+      args.onSubscriptionError?.(pusherError);
     });
 
     return PusherWebsocketReactNative.initialize({
@@ -234,7 +254,7 @@ export class Pusher {
   async subscribe(args: {
     channelName: string;
     onSubscriptionSucceeded?: (data: any) => void;
-    onSubscriptionError?: (error: any) => void;
+    onSubscriptionError?: (error: PusherError) => void;
     onMemberAdded?: (member: PusherMember) => void;
     onMemberRemoved?: (member: PusherMember) => void;
     onEvent?: (event: PusherEvent) => void;

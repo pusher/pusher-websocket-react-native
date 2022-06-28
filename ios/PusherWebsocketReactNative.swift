@@ -4,6 +4,9 @@ import Foundation
 @objc(PusherWebsocketReactNative)
 @objcMembers class PusherWebsocketReactNative: RCTEventEmitter, PusherDelegate, Authorizer {
     private var pusher: Pusher!
+
+    private let subscriptionErrorType = "SubscriptionError"
+    private let authErrorType = "AuthError"
     
     override func supportedEvents() -> [String]! {
         return ["onConnectionStateChange",
@@ -122,13 +125,15 @@ import Foundation
     
     public func failedToSubscribeToChannel(name: String, response: URLResponse?, data: String?, error: NSError?) {
         var code = ""
+        var type = subscriptionErrorType
         if let httpResponse = response as? HTTPURLResponse {
             code = String(httpResponse.statusCode)
+            type = authErrorType
         }
 
         self.callback(name:"onSubscriptionError", body:[
-            "message": (error != nil) ? error!.localizedDescription : ((data != nil) ? data! : ""),
-            "error": error.debugDescription,
+            "message": (error != nil) ? error!.localizedDescription : ((data != nil) ? data! : error.debugDescription),
+            "type": type,
             "code": code
         ])
     }

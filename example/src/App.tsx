@@ -16,6 +16,7 @@ import {
   PusherMember,
   PusherChannel,
   PusherEvent,
+  PusherError,
 } from 'pusher-websocket-react-native';
 
 export default function App() {
@@ -101,8 +102,8 @@ export default function App() {
     log(`Me: ${me}`);
   };
 
-  const onSubscriptionError = (message: string, e: any) => {
-    log(`onSubscriptionError: ${message} Exception: ${e}`);
+  const onSubscriptionError = (error: PusherError) => {
+    log(`onSubscriptionError: ${error}`);
   };
 
   const onDecryptionFailure = (eventName: string, reason: string) => {
