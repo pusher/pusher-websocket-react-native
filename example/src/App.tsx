@@ -101,7 +101,7 @@ export default function App() {
     log(`Me: ${me}`);
   };
 
-  const onSubscriptionError = (message: string, e?: any) => {
+  const onSubscriptionError = (message: string, e: any) => {
     log(`onSubscriptionError: ${message} Exception: ${e}`);
   };
 

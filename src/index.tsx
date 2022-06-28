@@ -170,7 +170,7 @@ export class Pusher {
           break;
         case 'pusher:subscription_error':
           const subscriptionErrorEvent = new PusherEvent(event);
-          let errorMessage = `Could not subscribe to ${subscriptionErrorEvent.channelName}`
+          let errorMessage = `Subscription error ${subscriptionErrorEvent.channelName}`
           args.onSubscriptionError?.(errorMessage, subscriptionErrorEvent.data);
           break;
         default:
