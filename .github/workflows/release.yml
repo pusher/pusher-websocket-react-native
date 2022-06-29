@@ -54,6 +54,6 @@ jobs:
           tag_name: ${{ env.TAG }}
           release_name: ${{ env.TAG }}
           body_path: CHANGELOG.tmp
-          draft: true
+          draft: false
           prerelease: true
 
