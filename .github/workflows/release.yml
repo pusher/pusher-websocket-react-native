@@ -12,6 +12,7 @@ jobs:
           fetch-depth: 0
       - name: Prepare tag
         id: prepare_tag
+        continue-on-error: true
         run: |
           export TAG=v$(jq -r '.version' package.json)
           echo "TAG=$TAG" >> $GITHUB_ENV
