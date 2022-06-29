@@ -15,7 +15,7 @@ import {
   Pusher,
   PusherMember,
   PusherChannel,
-  PusherEvent
+  PusherEvent,
 } from 'pusher-websocket-react-native';
 
 export default function App() {
@@ -44,6 +44,8 @@ export default function App() {
       onChangeEventData((await AsyncStorage.getItem('DATA')) || '');
     };
     getFromStorage().catch((e) => log('ERROR: ' + e));
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const connect = async () => {
@@ -80,7 +82,9 @@ export default function App() {
     currentState: string,
     previousState: string
   ) => {
-    log(`onConnectionStateChange. previousState=${previousState} newState=${currentState}`);
+    log(
+      `onConnectionStateChange. previousState=${previousState} newState=${currentState}`
+    );
   };
 
   const onError = (message: string, code: Number, error: any) => {
@@ -101,7 +105,11 @@ export default function App() {
     log(`Me: ${me}`);
   };
 
-  const onSubscriptionError = (channelName: string, message: string, e: any) => {
+  const onSubscriptionError = (
+    channelName: string,
+    message: string,
+    e: any
+  ) => {
     log(`onSubscriptionError: ${message}, channelName: ${channelName} e: ${e}`);
   };
 
@@ -174,7 +182,7 @@ export default function App() {
           <Button
             title="Connect"
             onPress={connect}
-            disabled={!Boolean(apiKey && cluster && channelName)}
+            disabled={!(apiKey && cluster && channelName)}
           />
         </>
       ) : (
@@ -207,7 +215,7 @@ export default function App() {
           <Button
             title="Trigger Event"
             onPress={trigger}
-            disabled={!Boolean(eventName)}
+            disabled={!eventName}
           />
         </>
       )}

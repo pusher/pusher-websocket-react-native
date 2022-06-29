@@ -84,7 +84,7 @@ export class PusherChannel {
   }
 
   async trigger(event: PusherEvent) {
-    if (event.channelName != this.channelName) {
+    if (event.channelName !== this.channelName) {
       throw 'Event is not for this channel';
     }
     return Pusher.getInstance().trigger(event);
@@ -129,7 +129,11 @@ export class Pusher {
     onError?: (message: string, code: Number, e: any) => void;
     onEvent?: (event: PusherEvent) => void;
     onSubscriptionSucceeded?: (channelName: string, data: any) => void;
-    onSubscriptionError?: (channelName: string, message: string, e: any) => void;
+    onSubscriptionError?: (
+      channelName: string,
+      message: string,
+      e: any
+    ) => void;
     onDecryptionFailure?: (eventName: string, reason: string) => void;
     onMemberAdded?: (channelName: string, member: PusherMember) => void;
     onMemberRemoved?: (channelName: string, member: PusherMember) => void;
@@ -161,7 +165,7 @@ export class Pusher {
             const userInfo = decodedData?.presence?.hash[_userId];
             var member = new PusherMember(_userId, userInfo);
             channel?.members.set(member.userId, member);
-            if (_userId == userId) {
+            if (_userId === userId) {
               channel!.me = member;
             }
           }
@@ -207,9 +211,12 @@ export class Pusher {
       }
     });
 
-    this.addListener('onSubscriptionError', async ({ channelName, message, type }) => {
-      args.onSubscriptionError?.(channelName, message, type);
-    });
+    this.addListener(
+      'onSubscriptionError',
+      async ({ channelName, message, type }) => {
+        args.onSubscriptionError?.(channelName, message, type);
+      }
+    );
 
     return PusherWebsocketReactNative.initialize({
       apiKey: args.apiKey,
@@ -236,7 +243,11 @@ export class Pusher {
   async subscribe(args: {
     channelName: string;
     onSubscriptionSucceeded?: (data: any) => void;
-    onSubscriptionError?: (channelName: string, message: string, e: any) => void;
+    onSubscriptionError?: (
+      channelName: string,
+      message: string,
+      e: any
+    ) => void;
     onMemberAdded?: (member: PusherMember) => void;
     onMemberRemoved?: (member: PusherMember) => void;
     onEvent?: (event: PusherEvent) => void;
