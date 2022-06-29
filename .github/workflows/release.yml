@@ -17,7 +17,7 @@ jobs:
         run: echo "RELEASE=patch" >> $GITHUB_ENV
       - name: Set beta release
         if: ${{ github.event.label.name == 'release-beta' }}
-        run: echo "RELEASE='prerel beta'" >> $GITHUB_ENV
+        run: echo "RELEASE=\"prerel beta\"" >> $GITHUB_ENV
       - name: Check release env
         id: check-release-env
         run: |
