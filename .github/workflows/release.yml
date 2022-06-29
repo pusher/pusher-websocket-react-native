@@ -1,6 +1,6 @@
 on:
-  pull_request:
-    types: [ labeled ]
+  push:
+    branches: [ gh-actions ]
 
 jobs:
   set-release-type:
