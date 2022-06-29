@@ -12,7 +12,6 @@ jobs:
           fetch-depth: 0
       - name: Prepare tag
         id: prepare_tag
-        continue-on-error: true
         run: |
           export TAG=v$(jq -r '.version' package.json)
           echo "TAG=$TAG" >> $GITHUB_ENV
@@ -32,6 +31,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     needs: check-release-tag
+    if: ${{ needs.check-release-tag.outputs.tag }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -40,9 +40,25 @@ jobs:
       - run: yarn
       - run: yarn prepare
   
-  create-github-release:
+  publish-npm:
     runs-on: ubuntu-latest
     needs: build
+    if: ${{ needs.check-release-tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          registry-url: https://registry.npmjs.org/
+          scope: '@pusher'
+      - run: yarn install
+      - run: yarn publish --verbose --dry-run=true
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
+
+  create-github-release:
+    runs-on: ubuntu-latest
+    needs: publish-npm
     if: ${{ needs.check-release-tag.outputs.tag }}
     steps:
       - uses: actions/checkout@v2
