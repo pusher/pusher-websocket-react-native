@@ -22,7 +22,8 @@ jobs:
       - name: Check release env
         id: check-release-env
         run: |
-          if [[ -z "prerel beta" ]];
+          echo "RELEASE=\"prerel beta.\"" >> $GITHUB_ENV
+          if [[ -z ${{ env.RELEASE }} ]];
           then
             echo "You need to set a release label on PRs to the main branch"
             exit 1
