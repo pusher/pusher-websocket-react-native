@@ -88,4 +88,3 @@ jobs:
           body_path: CHANGELOG.tmp
           draft: false
           prerelease: ${{ env.PRE_RELEASE }}
-          
