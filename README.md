@@ -3,9 +3,6 @@
 [![Latest Release](https://img.shields.io/github/v/release/pusher/pusher-websocket-react-native)](https://github.com/pusher/pusher-websocket-react-native/releases)
 [![Twitter](https://img.shields.io/badge/twitter-@Pusher-blue.svg?style=flat)](http://twitter.com/Pusher)
 [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/pusher/pusher-websocket-react-native/master/LICENSE)
-[![likes](https://badges.bar/pusher-websocket-react-native/likes)](https://pub.dev/packages/pusher-websocket-react-native/score)
-[![popularity](https://badges.bar/pusher-websocket-react-native/popularity)](https://pub.dev/packages/pusher-websocket-react-native/score)
-[![pub points](https://badges.bar/pusher-websocket-react-native/pub%20points)](https://pub.dev/packages/pusher-websocket-react-native/score)
 
 This is the [Pusher Channels](https://pusher.com/channels) React Native client.
 
