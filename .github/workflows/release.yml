@@ -38,7 +38,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: 16.x
-      - run: npm install
+      - run: yarn install
   
   publish-npm:
     runs-on: ubuntu-latest
@@ -51,8 +51,8 @@ jobs:
           node-version: 16.x
           registry-url: https://registry.npmjs.org/
           scope: '@pusher'
-      - run: npm install
-      - run: npm publish --dry-run --verbose --access public 
+      - run: yarn install
+      - run: yarn publish --verbose --access public 
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
 
