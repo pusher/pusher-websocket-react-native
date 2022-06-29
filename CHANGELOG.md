@@ -1,5 +1,5 @@
 # Changelog
 
-## 1.0.0-beta.0
+## 0.0.1-beta1
 
 * [ADDED] First beta release 🥳
