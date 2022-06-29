@@ -198,11 +198,13 @@ export class Pusher {
 
     this.addListener('onAuthorizer', async ({ channelName, socketId }) => {
       const data = await args.onAuthorizer?.(channelName, socketId);
-      await PusherWebsocketReactNative.onAuthorizer(
-        channelName,
-        socketId,
-        JSON.stringify(data)
-      );
+      if (data) {
+        await PusherWebsocketReactNative.onAuthorizer(
+          channelName,
+          socketId,
+          JSON.stringify(data)
+        );
+      }
     });
 
     this.addListener('onSubscriptionError', async ({ channelName, message, type }) => {
