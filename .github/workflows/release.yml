@@ -1,6 +1,8 @@
 on:
-  push:
-    branches: [ gh-actions ]
+  pull_request:
+    types: [ labeled ]
+    branches:
+      - gh-actions
 
 jobs:
   set-release-type:
@@ -22,7 +24,6 @@ jobs:
       - name: Check release env
         id: check-release-env
         run: |
-          echo "RELEASE=\"prerel beta.\"" >> $GITHUB_ENV
           if [[ -z ${{ env.RELEASE }} ]];
           then
             echo "You need to set a release label on PRs to the main branch"
