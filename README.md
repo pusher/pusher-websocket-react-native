@@ -1,8 +1,7 @@
 # Pusher React Native Websocket Client
-
-[![Latest Release](https://img.shields.io/github/v/release/pusher/pusher-websocket-react-native)](https://github.com/pusher/pusher-websocket-react-native/releases)
 [![Twitter](https://img.shields.io/badge/twitter-@Pusher-blue.svg?style=flat)](http://twitter.com/Pusher)
 [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/pusher/pusher-websocket-react-native/master/LICENSE)
+[![npm version](https://badge.fury.io/js/@pusher%2Fpusher-websocket-react-native.svg)](https://badge.fury.io/js/@pusher%2Fpusher-websocket-react-native)
 
 This is the [Pusher Channels](https://pusher.com/channels) React Native client.
 
