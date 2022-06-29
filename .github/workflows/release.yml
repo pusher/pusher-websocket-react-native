@@ -49,7 +49,11 @@ jobs:
       - name: Prepare tag
         run: |
           export TAG=v$(jq -r '.version' package.json)
+          echo "PRE_RELEASE=false" >> $GITHUB_ENV
           echo "TAG=$TAG" >> $GITHUB_ENV
+      - name: Check pre release
+        if: contains(env.TAG, 'beta')
+        run: echo "PRE_RELEASE=true" >> $GITHUB_ENV
       - name: Setup git
         run: |
           git config user.email "pusher-ci@pusher.com"
@@ -67,4 +71,4 @@ jobs:
           release_name: ${{ env.TAG }}
           body_path: CHANGELOG.tmp
           draft: false
-          prerelease: true
+          prerelease: ${{ env.PRE_RELEASE }}
