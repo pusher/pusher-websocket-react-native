@@ -15,7 +15,7 @@ import {
   Pusher,
   PusherMember,
   PusherChannel,
-  PusherEvent,
+  PusherEvent
 } from 'pusher-websocket-react-native';
 
 export default function App() {
@@ -57,7 +57,7 @@ export default function App() {
       await pusher.init({
         apiKey,
         cluster,
-        // authEndpoint: '<YOUR ENDPOINT URI>',
+        authEndpoint: '<YOUR ENDPOINT URI>',
         onConnectionStateChange,
         onError,
         onEvent,
@@ -80,7 +80,7 @@ export default function App() {
     currentState: string,
     previousState: string
   ) => {
-    log('onConnectionStateChange: ' + currentState);
+    log(`onConnectionStateChange. previousState=${previousState} newState=${currentState}`);
   };
 
   const onError = (message: string, code: Number, error: any) => {
@@ -101,8 +101,8 @@ export default function App() {
     log(`Me: ${me}`);
   };
 
-  const onSubscriptionError = (message: string, e: any) => {
-    log(`onSubscriptionError: ${message} Exception: ${e}`);
+  const onSubscriptionError = (channelName: string, message: string, e: any) => {
+    log(`onSubscriptionError: ${message}, channelName: ${channelName} e: ${e}`);
   };
 
   const onDecryptionFailure = (eventName: string, reason: string) => {
