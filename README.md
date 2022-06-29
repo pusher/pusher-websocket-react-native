@@ -83,11 +83,11 @@ To integrate the plugin in your React Native App, you need
 to add the plugin to your `package.json`:
 
 ```bash
-npm install pusher-websocket-react-native
+npm install @pusher/pusher-websocket-react-native
 ```
 or
 ```bash
-yarn add pusher-websocket-react-native
+yarn add @pusher/pusher-websocket-react-native
 ```
 
 ### iOS specific installation
@@ -109,7 +109,7 @@ pusher-websocket-java dependency.
 
 ## Initialization
 
-The Pusherclass is a singleton that
+The Pusher class is a singleton that
 can be instantiated with `getInstance()`. Then you need to initialize the client with several configuration options. Here is a quick example with several callbacks options:
 
 ```typescript

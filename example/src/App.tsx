@@ -121,17 +121,6 @@ export default function App() {
     onChangeMembers([...channel.members.values()]);
   };
 
-  const onAuthorizer = async (
-    channelName: string,
-    socketId: string
-  ) => {
-    return {
-      auth: 'foo:bar',
-      channel_data: '{"user_id": 1}',
-      shared_secret: 'foobar',
-    };
-  };
-
   const trigger = async () => {
     try {
       await AsyncStorage.multiSet([
