@@ -28,9 +28,20 @@ jobs:
           echo "::set-output name=tag::${{ env.TAG }}"
     outputs:
       tag: ${{ steps.release_output.outputs.tag }}
-  create-github-release:
+
+  build:
     runs-on: ubuntu-latest
     needs: check-release-tag
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+      - run: yarn prepare
+  
+  create-github-release:
+    runs-on: ubuntu-latest
+    needs: build
     if: ${{ needs.check-release-tag.outputs.tag }}
     steps:
       - uses: actions/checkout@v2
