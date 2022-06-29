@@ -6,6 +6,7 @@ jobs:
   set-release-type:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Set major release
         if: ${{ github.event.label.name == 'release-major' }}
         run: echo "RELEASE=\"major\"" >> $GITHUB_ENV
@@ -28,12 +29,6 @@ jobs:
           else
             exit 0
           fi
-      - name: Setup git
-        run: |
-          git config user.email "pusher-ci@pusher.com"
-          git config user.name "Pusher CI"
-          git fetch
-          git checkout ${{ github.event.pull_request.head.ref }}
       - name: Install semver-tool
         run: |
           export DIR=$(mktemp -d)
@@ -46,12 +41,17 @@ jobs:
           export CURRENT_VERSION=$(jq -r '.version' package.json)
           export NEW_VERSION=$(semver bump ${{ env.RELEASE }} $CURRENT_VERSION)
           echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
-
       - name: Bump version
         uses: actions/setup-node@v2
         with:
           node-version: 16.x
       - run: npm version --git-tag-version=false ${{ env.VERSION }}
+      - name: Setup git
+        run: |
+          git config user.email "pusher-ci@pusher.com"
+          git config user.name "Pusher CI"
+          git fetch
+          git checkout ${{ github.event.pull_request.head.ref }}
       - name: Commit changes
         run: |
           git add package.json
