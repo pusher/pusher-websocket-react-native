@@ -44,7 +44,7 @@ jobs:
           git config user.name "Pusher CI"
       - name: Prepare description
         run: |
-          csplit -s CHANGELOG.md "/##/" {1}
+          csplit -s CHANGELOG.md "/##/" {0}
           cat xx01 > CHANGELOG.tmp
       - name: Create Release
         uses: actions/create-release@v1
