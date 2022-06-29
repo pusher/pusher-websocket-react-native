@@ -22,7 +22,7 @@ jobs:
       - name: Check release env
         id: check-release-env
         run: |
-          if [[ -z ${{ env.RELEASE }} ]];
+          if [[ -z "prerel beta" ]];
           then
             echo "You need to set a release label on PRs to the main branch"
             exit 1
