@@ -1,59 +1,35 @@
 on:
-  push:
-    branches: [ gh-actions ]
+  pull_request:
+    types: [ labeled ]
 
 jobs:
-  check-release-tag:
+  set-release-type:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Prepare tag
-        id: prepare_tag
-        continue-on-error: true
+      - name: Set major release
+        if: ${{ github.event.label.name == 'release-major' }}
+        run: echo "RELEASE=major" >> $GITHUB_ENV
+      - name: Set minor release
+        if: ${{ github.event.label.name == 'release-minor' }}
+        run: echo "RELEASE=minor" >> $GITHUB_ENV
+      - name: Set patch release
+        if: ${{ github.event.label.name == 'release-patch' }}
+        run: echo "RELEASE=patch" >> $GITHUB_ENV
+      - name: Set beta release
+        if: ${{ github.event.label.name == 'release-beta' }}
+        run: echo "RELEASE=beta" >> $GITHUB_ENV
+      - name: Check release env
+        id: check-release-env
         run: |
-          export TAG=v$(jq -r '.version' package.json)
-          echo "TAG=$TAG" >> $GITHUB_ENV
-          export CHECK_TAG=$(git tag | grep $TAG)
-          if [[ $CHECK_TAG ]]; then
-            echo "Skipping because release tag already exists"
+          if [[ -z "${{ env.RELEASE }}" ]];
+          then
+            echo "You need to set a release label on PRs to the main branch"
             exit 1
+          else
+            exit 0
           fi
       - name: Output
-        id: release_output
-        if: ${{ steps.prepare_tag.outcome == 'success' }}
+        id: set-release-type-output
+        if: ${{ steps.check-release-env.outcome == 'success' }}
         run: |
-          echo "::set-output name=tag::${{ env.TAG }}"
-    outputs:
-      tag: ${{ steps.release_output.outputs.tag }}
-  create-github-release:
-    runs-on: ubuntu-latest
-    needs: check-release-tag
-    if: ${{ needs.check-release-tag.outputs.tag }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Prepare tag
-        run: |
-          export TAG=v$(jq -r '.version' package.json)
-          echo "TAG=$TAG" >> $GITHUB_ENV
-      - name: Setup git
-        run: |
-          git config user.email "pusher-ci@pusher.com"
-          git config user.name "Pusher CI"
-      - name: Prepare description
-        run: |
-          csplit -s CHANGELOG.md "/##/" {0}
-          cat xx01 > CHANGELOG.tmp
-      - name: Create Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ env.TAG }}
-          release_name: ${{ env.TAG }}
-          body_path: CHANGELOG.tmp
-          draft: false
-          prerelease: true
-
+          echo "::set-output name=release-type::${{ env.RELEASE }}"
