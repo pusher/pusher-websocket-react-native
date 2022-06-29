@@ -106,10 +106,10 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun subscribe(channelName: String, promise: Promise) {
     val channel = when {
-      channelName.startsWith("private-") -> pusher!!.subscribePrivate(channelName, this)
       channelName.startsWith("private-encrypted-") -> pusher!!.subscribePrivateEncrypted(
         channelName, this
       )
+      channelName.startsWith("private-") -> pusher!!.subscribePrivate(channelName, this)
       channelName.startsWith("presence-") -> pusher!!.subscribePresence(
         channelName, this
       )
@@ -127,15 +127,18 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun trigger(channelName: String, eventName: String, data: String, promise: Promise) {
-    when {
-      channelName.startsWith("private-") -> pusher!!.getPrivateChannel(channelName)
-        .trigger(eventName, data)
-      channelName.startsWith("private-encrypted-") -> throw Exception("It's not currently possible to send a message using private encrypted channels.")
-      channelName.startsWith("presence-") -> pusher!!.getPresenceChannel(channelName)
-        .trigger(eventName, data)
-      else -> throw Exception("Messages can only be sent to private and presence channels.")
+    try {
+      when {
+        channelName.startsWith("private-encrypted-") -> throw Exception("It's not currently possible to send a message using private encrypted channels.")
+        channelName.startsWith("private-") -> pusher!!.getPrivateChannel(channelName).trigger(eventName, data)
+        channelName.startsWith("presence-") -> pusher!!.getPresenceChannel(channelName)
+          .trigger(eventName, data)
+        else -> throw Exception("Messages can only be sent to private and presence channels.")
+      }
+      promise.resolve(null)
+    } catch (e: Exception) {
+      promise.reject(e)
     }
-    promise.resolve(null)
   }
 
   @ReactMethod
