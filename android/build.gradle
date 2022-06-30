@@ -124,5 +124,5 @@ dependencies {
   // noinspection GradleDynamicVersion
   api 'com.facebook.react:react-native:+'
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-  api 'com.pusher:pusher-java-client:+'
+  api 'com.pusher:pusher-java-client:2.2.8'
 }
