@@ -1,4 +1,5 @@
 # Pusher React Native Websocket Client
+
 [![Twitter](https://img.shields.io/badge/twitter-@Pusher-blue.svg?style=flat)](http://twitter.com/Pusher)
 [![GitHub license](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://raw.githubusercontent.com/pusher/pusher-websocket-react-native/master/LICENSE)
 [![npm version](https://badge.fury.io/js/@pusher%2Fpusher-websocket-react-native.svg)](https://badge.fury.io/js/@pusher%2Fpusher-websocket-react-native)
@@ -38,7 +39,6 @@ a minimal application to connect to a channel and send events.
   - [Configuration](#configuration)
       - [`activityTimeout (double)`](#activitytimeout-double)
       - [`apiKey (string)`](#apikey-string)
-      - [`authParams (Map)`](#authparams-map)
       - [`authEndpoint (string)`](#authendpoint-string)
       - [`cluster (string)`](#cluster-string)
       - [`useTLS (bool)`](#usetls-bool)
@@ -134,7 +134,6 @@ try {
     onDecryptionFailure,
     onMemberAdded,
     onMemberRemoved,
-    // onAuthorizer,
   });
 
   await pusher.subscribe({ channelName });
@@ -171,39 +170,6 @@ If no messages are received after this time period (in seconds),  the ping messa
 #### `apiKey (string)`
 
 You can get your `API_KEY` and `API_CLUSTER` from the [Pusher Channels dashboard](https://dashboard.pusher.com/).
-
-#### `authParams (Map)`
-
-Allows passing additional data to authorizers. Supports query string params and headers (AJAX only). For example, the following will pass `foo=bar` via the query string and `baz: boo` via headers:
-
-```typescript
-const pusher = Pusher.getInstance();
-await pusher.init(
-  apiKey: API_KEY,
-  cluster: API_CLUSTER,
-  authParams: {
-    params: { foo: 'bar' },
-    headers: { baz: 'boo' }
-  }
-});
-```
-
-Additional parameters are to be sent when the channel authentication endpoint is called. When using [ajax authentication](https://pusher.com/docs/authenticating_users#ajax_authentication) the parameters are passed as additional `POST` parameters. When using [jsonp authentication](http://pusher.com/docs/authenticating_users#jsonp_authentication) the parameters are passed as `GET` parameters. This can be useful with web application frameworks that guard against [CSRF (Cross-site request forgery)](http://en.wikipedia.org/wiki/Cross-site_request_forgery).
-
-CSRF
-
-If you require a CSRF header for incoming requests to the private channel authentication endpoint on your server, you should add a CSRF token to the `auth` hash under `headers`. This applies to frameworks which use CSRF protection by default.
-
-```typescript
-const pusher = await pusher.init(
-  apiKey: API_KEY,
-  cluster: API_CLUSTER,
-  authParams: {
-    params: { foo: 'bar' },
-    headers: { 'X-CSRF-Token': 'SOME_CSRF_TOKEN' }
-  }
-);
-```
 
 #### `authEndpoint (string)`
 

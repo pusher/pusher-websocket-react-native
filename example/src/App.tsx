@@ -11,12 +11,7 @@ import {
   FlatList,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  Pusher,
-  PusherMember,
-  PusherChannel,
-  PusherEvent,
-} from 'pusher-websocket-react-native';
+import { Pusher, PusherMember, PusherChannel, PusherEvent } from '../../src'; // This links the example app to the current SDK implementation
 
 export default function App() {
   let logLines: string[] = [];
@@ -59,7 +54,7 @@ export default function App() {
       await pusher.init({
         apiKey,
         cluster,
-        authEndpoint: '<YOUR ENDPOINT URI>',
+        // authEndpoint: '<Add your Auth Endpoint here>',
         onConnectionStateChange,
         onError,
         onEvent,
@@ -68,7 +63,6 @@ export default function App() {
         onDecryptionFailure,
         onMemberAdded,
         onMemberRemoved,
-        // onAuthorizer,
       });
 
       await pusher.connect();
