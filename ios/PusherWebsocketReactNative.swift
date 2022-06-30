@@ -94,18 +94,6 @@ import Foundation
             "socketId": socketID,
             "channelName": channelName
         ])
-        /* { authData in
-         if authData != nil {
-         let authDataCast = authData as! [String:String]
-         completionHandler(
-         PusherAuth(
-         auth: authDataCast["auth"]!,
-         channelData: authDataCast["channel_data"],
-         sharedSecret: authDataCast["shared_secret"]));
-         } else {
-         completionHandler(nil)
-         }
-         } */
     }
     
     public func changedConnectionState(from old: ConnectionState, to new: ConnectionState) {

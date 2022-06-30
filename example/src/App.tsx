@@ -16,7 +16,7 @@ import {
   PusherMember,
   PusherChannel,
   PusherEvent,
-} from 'pusher-websocket-react-native';
+} from '@pusher/pusher-websocket-react-native';
 
 export default function App() {
   let logLines: string[] = [];
@@ -59,7 +59,7 @@ export default function App() {
       await pusher.init({
         apiKey,
         cluster,
-        authEndpoint: '<YOUR ENDPOINT URI>',
+        // authEndpoint: '<Add your Auth Endpoint here>',
         onConnectionStateChange,
         onError,
         onEvent,
@@ -68,7 +68,6 @@ export default function App() {
         onDecryptionFailure,
         onMemberAdded,
         onMemberRemoved,
-        // onAuthorizer,
       });
 
       await pusher.connect();
