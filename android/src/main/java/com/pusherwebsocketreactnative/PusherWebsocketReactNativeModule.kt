@@ -26,7 +26,7 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   private var pusher: Pusher? = null
   private val TAG = "PusherReactNative"
   private val authorizerMutex = mutableMapOf<String, Semaphore>()
-  private val authorizerResult = mutableMapOf<String, String>()
+  private val authorizerResult = mutableMapOf<String, ReadableMap>()
 
   override fun getName(): String {
     return "PusherWebsocketReactNative"
@@ -157,12 +157,14 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
     val key = channelName + socketId
     authorizerMutex[key] = Semaphore(0)
     authorizerMutex[key]!!.acquire()
-    return authorizerResult.remove(key)
+    val authParams = authorizerResult.remove(key)!!
+    val gson = Gson()
+    val json = gson.toJson(authParams.toHashMap())
+    return json
   }
 
   @ReactMethod
-  fun onAuthorizer(channelName: String, socketId: String, data: String, promise: Promise) {
-    val gson = Gson()
+  fun onAuthorizer(channelName: String, socketId: String, data: ReadableMap, promise: Promise) {
     val key = channelName + socketId
     authorizerResult[key] = data
     authorizerMutex[key]!!.release()

@@ -206,7 +206,7 @@ export class Pusher {
         await PusherWebsocketReactNative.onAuthorizer(
           channelName,
           socketId,
-          JSON.stringify(data)
+          data
         );
       }
     });
