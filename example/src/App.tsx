@@ -16,7 +16,7 @@ import {
   PusherMember,
   PusherChannel,
   PusherEvent,
-} from '@pusher/pusher-websocket-react-native';
+} from '../../src' // This links the example app to the current SDK implementation
 
 export default function App() {
   let logLines: string[] = [];
