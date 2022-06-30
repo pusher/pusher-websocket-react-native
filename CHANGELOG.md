@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0
+
+* [CHANGED] Removed unsupported functions from README
+* [FIXED] Fixed build error on Example app
+* [FIXED] Fixed CHANGELOG error on release workflow
+
 ## 1.0.0-beta1
 
 * [FIXED] Fixed required dependencies on README
