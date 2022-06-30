@@ -11,12 +11,7 @@ import {
   FlatList,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  Pusher,
-  PusherMember,
-  PusherChannel,
-  PusherEvent,
-} from '../../src' // This links the example app to the current SDK implementation
+import { Pusher, PusherMember, PusherChannel, PusherEvent } from '../../src'; // This links the example app to the current SDK implementation
 
 export default function App() {
   let logLines: string[] = [];
