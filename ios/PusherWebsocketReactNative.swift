@@ -4,7 +4,10 @@ import Foundation
 @objc(PusherWebsocketReactNative)
 @objcMembers class PusherWebsocketReactNative: RCTEventEmitter, PusherDelegate, Authorizer {
     private var pusher: Pusher!
-
+    
+    private var authorizerMutex = [String : DispatchSemaphore]()
+    private var authorizerResult = [String : [String:String]]()
+    
     private let subscriptionErrorType = "SubscriptionError"
     private let authErrorType = "AuthError"
     
@@ -94,7 +97,21 @@ import Foundation
             "socketId": socketID,
             "channelName": channelName
         ])
+        
+        let key = channelName + socketID
+        authorizerMutex[key] = DispatchSemaphore(value: 0)
+        authorizerMutex[key]!.wait()
+        let authParams = authorizerResult.removeValue(forKey: key)!
+        completionHandler(PusherAuth(auth: authParams["auth"]!, channelData: authParams["channel_data"], sharedSecret: authParams["shared_secret"]))
     }
+    
+    public func onAuthorizer(_ channelName: String, socketID: String, data:[String:String], resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
+        let key = channelName + socketID
+        authorizerResult[key] = data
+        authorizerMutex[key]!.signal()
+        authorizerMutex.removeValue(forKey: key)
+    }
+    
     
     public func changedConnectionState(from old: ConnectionState, to new: ConnectionState) {
         self.callback(name:"onConnectionStateChange", body:[
@@ -118,7 +135,7 @@ import Foundation
             code = String(httpResponse.statusCode)
             type = authErrorType
         }
-
+        
         self.callback(name:"onSubscriptionError", body:[
             "message": (error != nil) ? error!.localizedDescription : ((data != nil) ? data! : error.debugDescription),
             "type": type,
