@@ -117,7 +117,7 @@ import {
   PusherMember,
   PusherChannel,
   PusherEvent,
-} from 'pusher-websocket-react-native';
+} from '@pusher/pusher-websocket-react-native';
 
 const pusher = Pusher.getInstance();
 
@@ -251,8 +251,6 @@ function onMemberRemoved(channelName:string, member:PusherMember) {
 Called when a member is removed from the presence channel.
 
 #### `onAuthorizer`
-
-> :warning: Currently this feature is not working on iOS. We're working to get this done asap.
 
 When passing the `onAuthorizer()` callback to the `init()` method, this callback is called to request auth information. Learn how
 to [generate the correct auth signatures](https://pusher.com/docs/channels/library_auth_reference/auth-signatures/)
