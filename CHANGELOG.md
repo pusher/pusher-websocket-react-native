@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1
+
+* [ADDED] Add onAuthorizer support to iOS
+
 ## 1.0.0
 
 * [CHANGED] Removed unsupported functions from README
