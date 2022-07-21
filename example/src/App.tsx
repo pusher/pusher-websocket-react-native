@@ -11,6 +11,7 @@ import {
   FlatList,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CryptoES from 'crypto-es';
 import { Pusher, PusherMember, PusherChannel, PusherEvent } from '../../src'; // This links the example app to the current SDK implementation
 
 export default function App() {
@@ -55,6 +56,7 @@ export default function App() {
         apiKey,
         cluster,
         // authEndpoint: '<Add your Auth Endpoint here>',
+        // onAuthorizer, // to implement a custom authorizer.
         onConnectionStateChange,
         onError,
         onEvent,
@@ -121,6 +123,20 @@ export default function App() {
     log(`onMemberRemoved: ${channelName} user: ${member}`);
     const channel: PusherChannel = pusher.getChannel(channelName);
     onChangeMembers([...channel.members.values()]);
+  };
+
+  // See https://pusher.com/docs/channels/library_auth_reference/auth-signatures/ for the format of this object.
+  const onAuthorizer = (channelName: string, socketId: string) => {
+    const user = JSON.stringify({ user_id: 12345 });
+    const stringToSign = socketId + ':' + channelName + ':' + user;
+    const pusherKey = '<YOUR PUSHER KEY>';
+    const pusherSecret = '<YOUR PUSHER SECRET>';
+    const signature = CryptoES.HmacSHA256(stringToSign, pusherSecret);
+    return {
+      auth: pusherKey + ':' + signature,
+      channel_data: user,
+      shared_secret: 'foobar',
+    };
   };
 
   const trigger = async () => {
