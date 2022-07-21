@@ -23,7 +23,7 @@ export default function App() {
   const [channelName, onChangeChannelName] = React.useState('');
   const [eventName, onChangeEventName] = React.useState('');
   const [eventData, onChangeEventData] = React.useState('');
-  const [members, onChangeMembers] = React.useState(new Array<PusherMember>());
+  const [members, onChangeMembers] = React.useState<PusherMember[]>([]);
   const [logText, setLog] = React.useState('');
 
   const log = async (line: string) => {
@@ -55,8 +55,21 @@ export default function App() {
       await pusher.init({
         apiKey,
         cluster,
-        // authEndpoint: '<Add your Auth Endpoint here>',
-        // onAuthorizer, // to implement a custom authorizer.
+        // authEndpoint
+        // ============
+        // You can let the pusher library call an endpoint URL,
+        // Please look here to implement a server side authorizer:
+        // https://pusher.com/docs/channels/server_api/authenticating-users/
+        //
+        // authEndpoint: '<Add your Auth Endpoint URL here>',
+        //
+        // onAuthorizer
+        // ============
+        // Or you can implement your own authorizer callback.
+        // See https://pusher.com/docs/channels/library_auth_reference/auth-signatures/
+        // for the format of this object, you need your key and secret from your Pusher
+        // Account.
+        onAuthorizer,
         onConnectionStateChange,
         onError,
         onEvent,
