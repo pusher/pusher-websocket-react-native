@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.2
+
+* [CHANGED] Use latest pusher websocket java sdk.
+* [ADDED] Example to use a custom authorizer.
+
 ## 1.0.1
 
 * [ADDED] Add onAuthorizer support to iOS
