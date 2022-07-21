@@ -4,24 +4,23 @@ import android.util.Log
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.google.gson.Gson
-import com.pusher.client.Authorizer
+import com.pusher.client.ChannelAuthorizer
 import com.pusher.client.Pusher
 import com.pusher.client.PusherOptions
 import com.pusher.client.channel.*
 import com.pusher.client.connection.ConnectionEventListener
 import com.pusher.client.connection.ConnectionState
 import com.pusher.client.connection.ConnectionStateChange
-import com.pusher.client.util.HttpAuthorizer
+import com.pusher.client.util.HttpChannelAuthorizer
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.concurrent.Semaphore
-
 
 class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext),
   ConnectionEventListener, ChannelEventListener, SubscriptionEventListener,
   PrivateChannelEventListener, PrivateEncryptedChannelEventListener, PresenceChannelEventListener,
-  Authorizer {
+  ChannelAuthorizer {
 
   private var pusher: Pusher? = null
   private val TAG = "PusherReactNative"
@@ -73,9 +72,10 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
           arguments.getInt("maxReconnectionAttempts")
         if (arguments.hasKey("maxReconnectGapInSeconds")) options.maxReconnectGapInSeconds =
           arguments.getInt("maxReconnectGapInSeconds")
-        if (arguments.hasKey("authEndpoint")) options.authorizer =
-          HttpAuthorizer(arguments.getString("authEndpoint"))
-        if (arguments.hasKey("authorizer") && arguments.getBoolean("authorizer")) options.authorizer = this
+        if (arguments.hasKey("authEndpoint")) options.channelAuthorizer =
+          HttpChannelAuthorizer(arguments.getString("authEndpoint"))
+        if (arguments.hasKey("authorizer") && arguments.getBoolean("authorizer")) options.channelAuthorizer =
+          this
         if (arguments.hasKey("proxy")) {
           val (host, port) = arguments.getString("proxy")!!.split(':')
           options.proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port.toInt()))
@@ -130,7 +130,8 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
     try {
       when {
         channelName.startsWith("private-encrypted-") -> throw Exception("It's not currently possible to send a message using private encrypted channels.")
-        channelName.startsWith("private-") -> pusher!!.getPrivateChannel(channelName).trigger(eventName, data)
+        channelName.startsWith("private-") -> pusher!!.getPrivateChannel(channelName)
+          .trigger(eventName, data)
         channelName.startsWith("presence-") -> pusher!!.getPresenceChannel(channelName)
           .trigger(eventName, data)
         else -> throw Exception("Messages can only be sent to private and presence channels.")

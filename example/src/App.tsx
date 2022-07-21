@@ -11,6 +11,7 @@ import {
   FlatList,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CryptoES from 'crypto-es';
 import { Pusher, PusherMember, PusherChannel, PusherEvent } from '../../src'; // This links the example app to the current SDK implementation
 
 export default function App() {
@@ -22,7 +23,7 @@ export default function App() {
   const [channelName, onChangeChannelName] = React.useState('');
   const [eventName, onChangeEventName] = React.useState('');
   const [eventData, onChangeEventData] = React.useState('');
-  const [members, onChangeMembers] = React.useState(new Array<PusherMember>());
+  const [members, onChangeMembers] = React.useState<PusherMember[]>([]);
   const [logText, setLog] = React.useState('');
 
   const log = async (line: string) => {
@@ -54,7 +55,21 @@ export default function App() {
       await pusher.init({
         apiKey,
         cluster,
-        // authEndpoint: '<Add your Auth Endpoint here>',
+        // authEndpoint
+        // ============
+        // You can let the pusher library call an endpoint URL,
+        // Please look here to implement a server side authorizer:
+        // https://pusher.com/docs/channels/server_api/authenticating-users/
+        //
+        // authEndpoint: '<Add your Auth Endpoint URL here>',
+        //
+        // onAuthorizer
+        // ============
+        // Or you can implement your own authorizer callback.
+        // See https://pusher.com/docs/channels/library_auth_reference/auth-signatures/
+        // for the format of this object, you need your key and secret from your Pusher
+        // Account.
+        onAuthorizer,
         onConnectionStateChange,
         onError,
         onEvent,
@@ -121,6 +136,20 @@ export default function App() {
     log(`onMemberRemoved: ${channelName} user: ${member}`);
     const channel: PusherChannel = pusher.getChannel(channelName);
     onChangeMembers([...channel.members.values()]);
+  };
+
+  // See https://pusher.com/docs/channels/library_auth_reference/auth-signatures/ for the format of this object.
+  const onAuthorizer = (channelName: string, socketId: string) => {
+    const user = JSON.stringify({ user_id: 12345 });
+    const stringToSign = socketId + ':' + channelName + ':' + user;
+    const pusherKey = '<YOUR PUSHER KEY>';
+    const pusherSecret = '<YOUR PUSHER SECRET>';
+    const signature = CryptoES.HmacSHA256(stringToSign, pusherSecret);
+    return {
+      auth: pusherKey + ':' + signature,
+      channel_data: user,
+      shared_secret: 'foobar',
+    };
   };
 
   const trigger = async () => {
