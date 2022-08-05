@@ -84,7 +84,7 @@ export class PusherChannel {
   }
 
   async trigger(event: Omit<PusherEvent, 'channelName'> & Partial<Pick<PusherEvent, 'channelName'>>) {
-    const channelName = event.channelName ?? this.channelName
+    const channelName = event.channelName ?? this.channelName;
     if (channelName !== this.channelName) {
       throw 'Event is not for this channel';
     }
