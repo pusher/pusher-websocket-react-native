@@ -83,11 +83,12 @@ export class PusherChannel {
     });
   }
 
-  async trigger(event: PusherEvent) {
-    if (event.channelName !== this.channelName) {
+  async trigger(event: Omit<PusherEvent, 'channelName'> & Partial<Pick<PusherEvent, 'channelName'>>) {
+    const channelName = event.channelName ?? this.channelName
+    if (channelName !== this.channelName) {
       throw 'Event is not for this channel';
     }
-    return Pusher.getInstance().trigger(event);
+    return Pusher.getInstance().trigger({ ...event, channelName });
   }
 }
 
