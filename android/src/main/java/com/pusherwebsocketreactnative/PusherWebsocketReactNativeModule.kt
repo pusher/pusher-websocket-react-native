@@ -65,9 +65,9 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
         if (arguments.hasKey("useTLS")) options.isUseTLS =
           arguments.getBoolean("useTLS")
         if (arguments.hasKey("activityTimeout")) options.activityTimeout =
-          arguments.getInt("activityTimeout") as Long
+          arguments.getInt("activityTimeout").toLong()
         if (arguments.hasKey("pongTimeout")) options.pongTimeout =
-          arguments.getInt("pongTimeout") as Long
+          arguments.getInt("pongTimeout").toLong()
         if (arguments.hasKey("maxReconnectionAttempts")) options.maxReconnectionAttempts =
           arguments.getInt("maxReconnectionAttempts")
         if (arguments.hasKey("maxReconnectGapInSeconds")) options.maxReconnectGapInSeconds =
