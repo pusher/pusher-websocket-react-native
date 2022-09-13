@@ -14,6 +14,7 @@ import Foundation
     override func supportedEvents() -> [String]! {
         return ["onConnectionStateChange",
                 "onSubscriptionError",
+                "onSubscriptionCount",
                 "onAuthorizer",
                 "onError",
                 "onDecryptionFailure",
@@ -216,7 +217,20 @@ import Foundation
                 onMemberRemoved: onMemberRemoved
             )
         } else {
-            pusher.subscribe(channelName: channelName)
+            let onSubscriptionCount:(Int) -> () = { subscriptionCount in
+                self.callback(
+                    name:"onEvent",body:[
+                        "channelName": channelName,
+                        "eventName": "pusher_internal:subscription_count",
+                        "userId": nil,
+                        "data": [
+                            "subscription_count": subscriptionCount
+                        ]
+                    ]
+                )
+            }
+            pusher.subscribe(channelName: channelName,
+                 onSubscriptionCountChanged: onSubscriptionCount)
         }
         resolve(nil)
     }
