@@ -120,6 +120,7 @@ export class Pusher {
     pongTimeout?: Number;
     maxReconnectionAttempts?: Number;
     maxReconnectGapInSeconds?: Number;
+    authorizerTimeoutInSeconds?: Number;
     proxy?: string;
     onConnectionStateChange?: (
       currentState: string,
@@ -227,6 +228,7 @@ export class Pusher {
       pongTimeout: args.pongTimeout,
       maxReconnectionAttempts: args.maxReconnectionAttempts,
       maxReconnectGapInSeconds: args.maxReconnectGapInSeconds,
+      authorizerTimeoutInSeconds: args.authorizerTimeoutInSeconds,
       authorizer: args.onAuthorizer ? true : false,
       proxy: args.proxy,
     });
