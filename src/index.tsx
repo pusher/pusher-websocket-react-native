@@ -17,6 +17,15 @@ const PusherWebsocketReactNative = NativeModules.PusherWebsocketReactNative
       }
     );
 
+export interface PusherAuthorizerResult {
+  /** required for private channels */
+  auth?: string;
+  /** required for encrypted channels */
+  shared_secret?: string;
+  /** required for presence channels, should be stringified JSON */
+  channel_data?: string;
+}
+
 export class PusherEvent {
   channelName: string;
   eventName: string;
@@ -126,7 +135,10 @@ export class Pusher {
       currentState: string,
       previousState: string
     ) => void;
-    onAuthorizer?: (channelName: string, socketId: string) => any;
+    onAuthorizer?: (
+      channelName: string,
+      socketId: string
+    ) => Promise<PusherAuthorizerResult>;
     onError?: (message: string, code: Number, e: any) => void;
     onEvent?: (event: PusherEvent) => void;
     onSubscriptionSucceeded?: (channelName: string, data: any) => void;

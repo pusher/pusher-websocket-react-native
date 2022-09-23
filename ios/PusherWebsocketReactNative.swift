@@ -103,15 +103,19 @@ import Foundation
         
         let key = channelName + socketID
         let authCallback = { (authParams:[String:String]) in
-            completionHandler(PusherAuth(auth: authParams["auth"]!, channelData: authParams["channel_data"], sharedSecret: authParams["shared_secret"]))
+            if let authParam = authParams["auth"] {
+                completionHandler(PusherAuth(auth: authParam, channelData: authParams["channel_data"], sharedSecret: authParams["shared_secret"]))
+            } else {
+                completionHandler(PusherAuth(auth: "<missing_auth_param>:error", channelData: authParams["channel_data"], sharedSecret: authParams["shared_secret"]))
+            }
         }
         authorizerCompletionHandlers[key] = authCallback
         
-        // the JS thread might not call onAuthorizer – we need to cleanup the completion handler
+        // the JS thread might not call onAuthorizer – we need to cleanup the completion handler after timeout
         let timeout = DispatchTimeInterval.seconds(self.authorizerCompletionHandlerTimeout)
         DispatchQueue.main.asyncAfter(deadline: .now() + timeout) {
-            if let callback = self.authorizerCompletionHandlers.removeValue(forKey: key) {
-                callback(["auth": "timeout"]) // can we pass something else/nothing?
+            if let storedAuthHandler = self.authorizerCompletionHandlers.removeValue(forKey: key) {
+                storedAuthHandler(["auth": "<authorizer_timeout>:error"])
             }
         }
     }
