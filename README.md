@@ -189,7 +189,7 @@ Whether or not you would like to use TLS encrypted transport or not, default is 
 
 #### `authorizerTimeoutInSeconds (double)`
 
-If onAuthorizer callback is not called in Javascript before this time period (in seconds), the authorization for the channel will timeout on the native side.
+If onAuthorizer callback is not called in Javascript before this time period (in seconds), the authorization for the channel will timeout on the native side. Default value: 10 seconds. iOS only.
 
 
 ## Event Callback parameters
