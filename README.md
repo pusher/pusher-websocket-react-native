@@ -135,6 +135,7 @@ try {
     onDecryptionFailure,
     onMemberAdded,
     onMemberRemoved,
+    onSubscriptionCount,
   });
 
   await pusher.subscribe({ channelName });
