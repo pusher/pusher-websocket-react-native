@@ -151,17 +151,18 @@ You can subscribe to channels before calling `connect()`.
 There are a few configuration parameters which can be set for the Pusher client. The following table
 describes available parameters for each platform:
 
-| parameter                | Android | iOS |
-| ------------------------ | ------- | --- |
-| activityTimeout          | ✅       | ✅   |
-| apiKey                   | ✅       | ✅   |
-| authEndpoint             | ✅       | ✅   |
-| cluster                  | ✅       | ✅   |
-| maxReconnectGapInSeconds | ✅       | ✅   |
-| maxReconnectionAttempts  | ✅       | ✅   |
-| pongTimeout              | ✅       | ✅   |
-| proxy                    | ✅       | ⬜️   |
-| useTLS                   | ✅       | ✅   |
+| parameter                  | Android | iOS |
+| -------------------------- | ------- | --- |
+| activityTimeout            | ✅      | ✅  |
+| apiKey                     | ✅      | ✅  |
+| authEndpoint               | ✅      | ✅  |
+| cluster                    | ✅      | ✅  |
+| maxReconnectGapInSeconds   | ✅      | ✅  |
+| maxReconnectionAttempts    | ✅      | ✅  |
+| pongTimeout                | ✅      | ✅  |
+| proxy                      | ✅      | ⬜️ |
+| useTLS                     | ✅      | ✅  |
+| authorizerTimeoutInSeconds | ⬜️     | ✅  |
 
 #### `activityTimeout (double)`
 
@@ -185,6 +186,11 @@ Specifies the cluster that pusher-js should connect to. Here's the full list of 
 #### `useTLS (bool)`
 
 Whether or not you would like to use TLS encrypted transport or not, default is `true`.
+
+#### `authorizerTimeoutInSeconds (double)`
+
+If onAuthorizer callback is not called in Javascript before this time period (in seconds), the authorization for the channel will timeout on the native side.
+
 
 ## Event Callback parameters
 
@@ -256,7 +262,7 @@ When passing the `onAuthorizer()` callback to the `init()` method, this callback
 to [generate the correct auth signatures](https://pusher.com/docs/channels/library_auth_reference/auth-signatures/)
 
 ```typescript
-async function onAuthorizer(channelName:string, socketId:string):Promise<any> {
+async function onAuthorizer(channelName:string, socketId:string):Promise<PusherAuthorizerResult> {
   return {
     auth: "foo:bar",
     channel_data: '{"user_id": 1}',
