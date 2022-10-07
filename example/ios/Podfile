@@ -14,7 +14,7 @@ target 'PusherWebsocketReactNativeExample' do
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
   # you should disable these next few lines.
-  use_flipper!({ 'Flipper' => '0.145.0' })
+  use_flipper!({ 'Flipper' => '0.159.0' })
   post_install do |installer|
     flipper_post_install(installer)
   end

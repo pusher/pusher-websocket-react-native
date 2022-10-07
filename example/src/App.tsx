@@ -75,6 +75,7 @@ export default function App() {
         onEvent,
         onSubscriptionSucceeded,
         onSubscriptionError,
+        onSubscriptionCount,
         onDecryptionFailure,
         onMemberAdded,
         onMemberRemoved,
@@ -112,6 +113,15 @@ export default function App() {
     const me = channel.me;
     onChangeMembers([...channel.members.values()]);
     log(`Me: ${me}`);
+  };
+
+  const onSubscriptionCount = (
+    channelName: string,
+    subscriptionCount: Number
+  ) => {
+    log(
+      `onSubscriptionCount: ${subscriptionCount}, channelName: ${channelName}`
+    );
   };
 
   const onSubscriptionError = (

@@ -47,6 +47,7 @@ a minimal application to connect to a channel and send events.
       - [`onSubscriptionSucceeded`](#onsubscriptionsucceeded)
       - [`onSubscriptionError`](#onsubscriptionerror)
       - [`onDecryptionFailure`](#ondecryptionfailure)
+      - [`onSubscriptionCount`](#onsubscriptioncount)
       - [`onMemberAdded`](#onmemberadded)
       - [`onMemberRemoved`](#onmemberremoved)
       - [`onAuthorizer`](#onauthorizer)
@@ -134,6 +135,7 @@ try {
     onDecryptionFailure,
     onMemberAdded,
     onMemberRemoved,
+    onSubscriptionCount,
   });
 
   await pusher.subscribe({ channelName });
@@ -229,6 +231,17 @@ function onDecryptionFailure(event:string, string reason:string) {
 }
 ```
 Used with private channels only. Use this if you want to be notified if any messages fail to decrypt.
+
+#### `onSubscriptionCount`
+
+```typescript
+function onSubscriptionCount(subscriptionCount:number) {
+  console.log(`onSubscriptionSucceeded: ${subscriptionCount}`);
+}
+```
+
+is an event that can be manually enabled on the server to count the number of connections that are currently subscribed to a particular channel. They work with all channel types, except presence channels.
+See [Counting live users at scale with subscription_count events](https://blog.pusher.com/counting-live-users-at-scale-with-subscription-count-events/) for more information.
 
 #### `onMemberAdded`
 

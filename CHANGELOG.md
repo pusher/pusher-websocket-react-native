@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.0
+
+* [CHANGED] Add support for the new subscription_count event
+* [CHANGED] Using latest pusher-websocket-java and pusher-websocket-swift
+
 ## 1.0.2
 
 * [CHANGED] Use latest pusher websocket java sdk.
