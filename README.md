@@ -407,11 +407,11 @@ The easiest way to find out when a channel has been successfully subscribed to i
 ```typescript
 const pusher = Pusher.getInstance();
 const channels = {};
-await pusher.init(
+await pusher.init({
   apiKey: API_KEY,
   cluster: API_CLUSTER,
   authEndPoint: "https://your-server.com/pusher/auth"
-);
+});
 const myChannel = await pusher.subscribe(
   channelName:'presence-my-channel',
   onSubscriptionSucceeded: (channelName, data) => {
@@ -453,16 +453,16 @@ These are bound to a specific channel. You can reuse event names in different pa
 
 ```typescript
 const pusher = Pusher.getInstance();
-await pusher.init(
+await pusher.init({
   apiKey: API_KEY,
   cluster: API_CLUSTER
-);
-const myChannel = await pusher.subscribe(
+});
+const myChannel = await pusher.subscribe({
   channelName: "my-channel",
   onEvent: (event) => {
     console.log(`Got channel event: ${event}`);
   }
-);
+});
 await pusher.connect();
 ```
 
@@ -472,16 +472,16 @@ You can attach behavior to these events regardless of the channel the event is b
 
 ```typescript
 const pusher = Pusher.getInstance();
-await pusher.init(
+await pusher.init({
   apiKey: API_KEY,
   cluster: API_CLUSTER,
   onEvent: (event) {
     console.log(`Got event: ${event}`);
   }
-);
-const myChannel = await pusher.subscribe(
+});
+const myChannel = await pusher.subscribe({
   channelName: "my-channel"
-);
+});
 ```
 
 ### PusherEvent
