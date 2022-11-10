@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.1
+
+* [CHANGED] Allow re-init of the Pusher singleton.
+* [CHANGED] Update dependencies
+
 ## 1.1.0
 
 * [CHANGED] Add support for the new subscription_count event
