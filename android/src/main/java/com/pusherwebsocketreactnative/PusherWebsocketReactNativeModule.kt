@@ -59,31 +59,30 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
     promise: Promise
   ) {
     try {
-      if (pusher == null) {
-        val options = PusherOptions()
-        if (arguments.hasKey("cluster")) options.setCluster(arguments.getString("cluster"))
-        if (arguments.hasKey("useTLS")) options.isUseTLS =
-          arguments.getBoolean("useTLS")
-        if (arguments.hasKey("activityTimeout")) options.activityTimeout =
-          arguments.getInt("activityTimeout").toLong()
-        if (arguments.hasKey("pongTimeout")) options.pongTimeout =
-          arguments.getInt("pongTimeout").toLong()
-        if (arguments.hasKey("maxReconnectionAttempts")) options.maxReconnectionAttempts =
-          arguments.getInt("maxReconnectionAttempts")
-        if (arguments.hasKey("maxReconnectGapInSeconds")) options.maxReconnectGapInSeconds =
-          arguments.getInt("maxReconnectGapInSeconds")
-        if (arguments.hasKey("authEndpoint")) options.channelAuthorizer =
-          HttpChannelAuthorizer(arguments.getString("authEndpoint"))
-        if (arguments.hasKey("authorizer") && arguments.getBoolean("authorizer")) options.channelAuthorizer =
-          this
-        if (arguments.hasKey("proxy")) {
-          val (host, port) = arguments.getString("proxy")!!.split(':')
-          options.proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port.toInt()))
-        }
-        pusher = Pusher(arguments.getString("apiKey"), options)
-      } else {
-        throw Exception("Pusher Channels already initialized.")
+      if (pusher != null) {
+        pusher!!.disconnect()
       }
+      val options = PusherOptions()
+      if (arguments.hasKey("cluster")) options.setCluster(arguments.getString("cluster"))
+      if (arguments.hasKey("useTLS")) options.isUseTLS =
+        arguments.getBoolean("useTLS")
+      if (arguments.hasKey("activityTimeout")) options.activityTimeout =
+        arguments.getInt("activityTimeout").toLong()
+      if (arguments.hasKey("pongTimeout")) options.pongTimeout =
+        arguments.getInt("pongTimeout").toLong()
+      if (arguments.hasKey("maxReconnectionAttempts")) options.maxReconnectionAttempts =
+        arguments.getInt("maxReconnectionAttempts")
+      if (arguments.hasKey("maxReconnectGapInSeconds")) options.maxReconnectGapInSeconds =
+        arguments.getInt("maxReconnectGapInSeconds")
+      if (arguments.hasKey("authEndpoint")) options.channelAuthorizer =
+        HttpChannelAuthorizer(arguments.getString("authEndpoint"))
+      if (arguments.hasKey("authorizer") && arguments.getBoolean("authorizer")) options.channelAuthorizer =
+        this
+      if (arguments.hasKey("proxy")) {
+        val (host, port) = arguments.getString("proxy")!!.split(':')
+        options.proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port.toInt()))
+      }
+      pusher = Pusher(arguments.getString("apiKey"), options)
       Log.i(TAG, "Start $pusher")
       promise.resolve(null)
     } catch (e: Exception) {
