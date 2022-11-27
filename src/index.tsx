@@ -191,6 +191,14 @@ export class Pusher {
           channel.onSubscriptionCount?.(decodedData.subscription_count);
           break;
         default:
+
+          // Channel not found
+          // Possibly channelName not provided, because other library / dependency sent same event with different data.
+          // Even if we use prefix on event names, then other libraries or current library extensions can easily broke 
+          // this with sending event without required parameters - channelName, eventName etc..
+          // Ensure channel exists, before moving forward
+          if(!channel) return;
+          
           const pusherEvent = new PusherEvent(event);
           args.onEvent?.(pusherEvent);
           channel.onEvent?.(pusherEvent);
