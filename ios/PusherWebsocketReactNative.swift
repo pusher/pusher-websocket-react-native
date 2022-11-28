@@ -32,7 +32,7 @@ import Foundation
     }
 
     func callback(name:String, body:Any) -> Void {
-        PusherWebsocketReactNative.shared?.sendEvent(withName:vendorEventName, body:body)
+        PusherWebsocketReactNative.shared?.sendEvent(name:vendorEventName, body:body)
     }
 
     func initialize(_ args:[String: Any], resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
