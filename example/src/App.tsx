@@ -1,4 +1,5 @@
 import * as React from 'react';
+
 import {
   StyleSheet,
   View,
@@ -11,8 +12,13 @@ import {
   FlatList,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CryptoES from 'crypto-es';
-import { Pusher, PusherMember, PusherChannel, PusherEvent } from '../../src'; // This links the example app to the current SDK implementation
+import {
+  Pusher,
+  PusherMember,
+  PusherChannel,
+  PusherEvent,
+  PusherAuthorizerResult,
+} from '../../src'; // This links the example app to the current SDK implementation
 
 export default function App() {
   let logLines: string[] = [];
@@ -149,17 +155,26 @@ export default function App() {
   };
 
   // See https://pusher.com/docs/channels/library_auth_reference/auth-signatures/ for the format of this object.
-  const onAuthorizer = (channelName: string, socketId: string) => {
-    const user = JSON.stringify({ user_id: 12345 });
-    const stringToSign = socketId + ':' + channelName + ':' + user;
-    const pusherKey = '<YOUR PUSHER KEY>';
-    const pusherSecret = '<YOUR PUSHER SECRET>';
-    const signature = CryptoES.HmacSHA256(stringToSign, pusherSecret);
-    return {
-      auth: pusherKey + ':' + signature,
-      channel_data: user,
-      shared_secret: 'foobar',
-    };
+  const onAuthorizer = async (channelName: string, socketId: string) => {
+    log(
+      `calling onAuthorizer. channelName=${channelName}, socketId=${socketId}`
+    );
+
+    const response = await fetch('some_url', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        socket_id: socketId,
+        channel_name: channelName,
+      }),
+    });
+
+    const body = (await response.json()) as PusherAuthorizerResult;
+
+    log(`response: ${JSON.stringify(body)}`);
+    return body;
   };
 
   const trigger = async () => {

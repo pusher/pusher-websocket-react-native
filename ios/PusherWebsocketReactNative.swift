@@ -5,8 +5,8 @@ import Foundation
 @objcMembers class PusherWebsocketReactNative: RCTEventEmitter, PusherDelegate, Authorizer {
     private var pusher: Pusher!
 
-    private var authorizerMutex = [String : DispatchSemaphore]()
-    private var authorizerResult = [String : [String:String]]()
+    private var authorizerCompletionHandlers = [String: ([String:String]) -> Void]()
+    private var authorizerCompletionHandlerTimeout = 10 // seconds
 
     private let subscriptionErrorType = "SubscriptionError"
     private let authErrorType = "AuthError"
@@ -85,6 +85,11 @@ import Foundation
         if args["pongTimeout"] is Int {
             pusher.connection.pongResponseTimeoutInterval = args["pongTimeout"] as! TimeInterval / 1000.0
         }
+
+        if let authorizerTimeoutInSeconds = args["authorizerTimeoutInSeconds"] as? Int {
+            self.authorizerCompletionHandlerTimeout = authorizerTimeoutInSeconds
+        }
+
         pusher.connection.delegate = self
         pusher.bind(eventCallback: onEvent)
         resolve(nil)
@@ -101,17 +106,29 @@ import Foundation
         ])
 
         let key = channelName + socketID
-        authorizerMutex[key] = DispatchSemaphore(value: 0)
-        authorizerMutex[key]!.wait()
-        let authParams = authorizerResult.removeValue(forKey: key)!
-        completionHandler(PusherAuth(auth: authParams["auth"]!, channelData: authParams["channel_data"], sharedSecret: authParams["shared_secret"]))
+        let authCallback = { (authParams:[String:String]) in
+            if let authParam = authParams["auth"] {
+                completionHandler(PusherAuth(auth: authParam, channelData: authParams["channel_data"], sharedSecret: authParams["shared_secret"]))
+            } else {
+                completionHandler(PusherAuth(auth: "<missing_auth_param>:error", channelData: authParams["channel_data"], sharedSecret: authParams["shared_secret"]))
+            }
+        }
+        authorizerCompletionHandlers[key] = authCallback
+
+        // the JS thread might not call onAuthorizer – we need to cleanup the completion handler after timeout
+        let timeout = DispatchTimeInterval.seconds(self.authorizerCompletionHandlerTimeout)
+        DispatchQueue.main.asyncAfter(deadline: .now() + timeout) {
+            if let storedAuthHandler = self.authorizerCompletionHandlers.removeValue(forKey: key) {
+                storedAuthHandler(["auth": "<authorizer_timeout>:error"])
+            }
+        }
     }
 
     public func onAuthorizer(_ channelName: String, socketID: String, data:[String:String], resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
         let key = channelName + socketID
-        authorizerResult[key] = data
-        authorizerMutex[key]!.signal()
-        authorizerMutex.removeValue(forKey: key)
+        if let storedAuthHandler = authorizerCompletionHandlers.removeValue(forKey: key) {
+            storedAuthHandler(data)
+        }
     }
 
 

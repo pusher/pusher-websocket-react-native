@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0
+
+* [CHANGED] Remove mutex locks in favor of storing callbacks so onAuthorizer does no longer freeze the app on iOS
+
 ## 1.1.1
 
 * [CHANGED] Allow re-init of the Pusher singleton.
