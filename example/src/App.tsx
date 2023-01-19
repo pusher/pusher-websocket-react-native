@@ -161,7 +161,7 @@ export default function App() {
     );
 
     const response = await fetch(
-      'https://800f-191-190-100-47.ngrok.io/pusher/channel-auth',
+      'some_url',
       {
         method: 'POST',
         headers: {
