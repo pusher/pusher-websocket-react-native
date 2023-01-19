@@ -3,6 +3,14 @@ import Foundation
 
 @objc(PusherWebsocketReactNative)
 @objcMembers class PusherWebsocketReactNative: RCTEventEmitter, PusherDelegate, Authorizer {
+
+    public static var shared: PusherWebsocketReactNative?
+
+    override init() {
+        super.init()
+        PusherWebsocketReactNative.shared = self
+    }
+
     private var pusher: Pusher!
 
     private var authorizerCompletionHandlers = [String: ([String:String]) -> Void]()
@@ -24,7 +32,7 @@ import Foundation
     }
 
     func callback(name:String, body:Any) -> Void {
-        self.sendEvent(withName:name, body:body)
+        PusherWebsocketReactNative.shared?.sendEvent(name:vendorEventName, body:body)
     }
 
     func initialize(_ args:[String: Any], resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
