@@ -160,19 +160,16 @@ export default function App() {
       `calling onAuthorizer. channelName=${channelName}, socketId=${socketId}`
     );
 
-    const response = await fetch(
-      'some_url',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          socket_id: socketId,
-          channel_name: channelName,
-        }),
-      }
-    );
+    const response = await fetch('some_url', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        socket_id: socketId,
+        channel_name: channelName,
+      }),
+    });
 
     const body = (await response.json()) as PusherAuthorizerResult;
 
