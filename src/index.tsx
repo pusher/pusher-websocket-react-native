@@ -139,7 +139,10 @@ export class Pusher {
       currentState: string,
       previousState: string
     ) => void;
-    onAuthorizer?: (channelName: string, socketId: string) => Promise<PusherAuthorizerResult>;
+    onAuthorizer?: (
+      channelName: string,
+      socketId: string
+    ) => Promise<PusherAuthorizerResult>;
     onError?: (message: string, code: Number, e: any) => void;
     onEvent?: (event: PusherEvent) => void;
     onSubscriptionSucceeded?: (channelName: string, data: any) => void;
