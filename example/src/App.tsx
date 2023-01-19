@@ -165,7 +165,6 @@ export default function App() {
       {
         method: 'POST',
         headers: {
-          'X-User-Id': 'felipe-0',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
