@@ -12,7 +12,6 @@ import {
   FlatList,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import CryptoES from 'crypto-es';
 import { Pusher, PusherMember, PusherChannel, PusherEvent, PusherAuthorizerResult } from '../../src'; // This links the example app to the current SDK implementation
 
 export default function App() {
