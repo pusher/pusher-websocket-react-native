@@ -66,13 +66,16 @@ export class PusherChannel {
   channelName: string;
   members = new Map<String, PusherMember>();
   me?: PusherMember;
+  subscriptionCount?: Number;
   onSubscriptionSucceeded?: (data: any) => void;
+  onSubscriptionCount?: (subscriptionCount: Number) => void;
   onEvent?: (event: any) => void;
   onMemberAdded?: (member: PusherMember) => void;
   onMemberRemoved?: (member: PusherMember) => void;
   constructor(args: {
     channelName: string;
     onSubscriptionSucceeded?: (data: any) => void;
+    onSubscriptionCount?: (subscriptionCount: Number) => void;
     onEvent?: (member: PusherEvent) => void;
     onMemberAdded?: (member: PusherMember) => void;
     onMemberRemoved?: (member: PusherMember) => void;
@@ -83,6 +86,7 @@ export class PusherChannel {
     this.onEvent = args.onEvent;
     this.onMemberAdded = args.onMemberAdded;
     this.onMemberRemoved = args.onMemberRemoved;
+    this.onSubscriptionCount = args.onSubscriptionCount;
     this.me = args.me;
   }
 
@@ -147,6 +151,10 @@ export class Pusher {
       message: string,
       e: any
     ) => void;
+    onSubscriptionCount?: (
+      channelName: string,
+      subscriptionCount: Number
+    ) => void;
     onDecryptionFailure?: (eventName: string, reason: string) => void;
     onMemberAdded?: (channelName: string, member: PusherMember) => void;
     onMemberRemoved?: (channelName: string, member: PusherMember) => void;
@@ -168,7 +176,7 @@ export class Pusher {
       const eventName = event.eventName;
       const data = event.data;
       const userId = event.userId;
-      const channel = this.channels.get(channelName);
+      const channel = this.channels.get(channelName)!;
 
       switch (eventName) {
         case 'pusher_internal:subscription_succeeded':
@@ -177,18 +185,28 @@ export class Pusher {
           for (const _userId in decodedData?.presence?.hash) {
             const userInfo = decodedData?.presence?.hash[_userId];
             var member = new PusherMember(_userId, userInfo);
-            channel?.members.set(member.userId, member);
+            channel.members.set(member.userId, member);
             if (_userId === userId) {
-              channel!.me = member;
+              channel.me = member;
             }
           }
           args.onSubscriptionSucceeded?.(channelName, decodedData);
           channel?.onSubscriptionSucceeded?.(decodedData);
           break;
+        case 'pusher_internal:subscription_count':
+          // Depending on the platform implementation we get json or a Map.
+          var decodedData = data instanceof Object ? data : JSON.parse(data);
+          channel.subscriptionCount = decodedData.subscription_count;
+          args.onSubscriptionCount?.(
+            channelName,
+            decodedData.subscription_count
+          );
+          channel.onSubscriptionCount?.(decodedData.subscription_count);
+          break;
         default:
           const pusherEvent = new PusherEvent(event);
           args.onEvent?.(pusherEvent);
-          channel?.onEvent?.(pusherEvent);
+          channel.onEvent?.(pusherEvent);
           break;
       }
     });

@@ -59,31 +59,30 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
     promise: Promise
   ) {
     try {
-      if (pusher == null) {
-        val options = PusherOptions()
-        if (arguments.hasKey("cluster")) options.setCluster(arguments.getString("cluster"))
-        if (arguments.hasKey("useTLS")) options.isUseTLS =
-          arguments.getBoolean("useTLS")
-        if (arguments.hasKey("activityTimeout")) options.activityTimeout =
-          arguments.getInt("activityTimeout") as Long
-        if (arguments.hasKey("pongTimeout")) options.pongTimeout =
-          arguments.getInt("pongTimeout") as Long
-        if (arguments.hasKey("maxReconnectionAttempts")) options.maxReconnectionAttempts =
-          arguments.getInt("maxReconnectionAttempts")
-        if (arguments.hasKey("maxReconnectGapInSeconds")) options.maxReconnectGapInSeconds =
-          arguments.getInt("maxReconnectGapInSeconds")
-        if (arguments.hasKey("authEndpoint")) options.channelAuthorizer =
-          HttpChannelAuthorizer(arguments.getString("authEndpoint"))
-        if (arguments.hasKey("authorizer") && arguments.getBoolean("authorizer")) options.channelAuthorizer =
-          this
-        if (arguments.hasKey("proxy")) {
-          val (host, port) = arguments.getString("proxy")!!.split(':')
-          options.proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port.toInt()))
-        }
-        pusher = Pusher(arguments.getString("apiKey"), options)
-      } else {
-        throw Exception("Pusher Channels already initialized.")
+      if (pusher != null) {
+        pusher!!.disconnect()
       }
+      val options = PusherOptions()
+      if (arguments.hasKey("cluster")) options.setCluster(arguments.getString("cluster"))
+      if (arguments.hasKey("useTLS")) options.isUseTLS =
+        arguments.getBoolean("useTLS")
+      if (arguments.hasKey("activityTimeout")) options.activityTimeout =
+        arguments.getInt("activityTimeout").toLong()
+      if (arguments.hasKey("pongTimeout")) options.pongTimeout =
+        arguments.getInt("pongTimeout").toLong()
+      if (arguments.hasKey("maxReconnectionAttempts")) options.maxReconnectionAttempts =
+        arguments.getInt("maxReconnectionAttempts")
+      if (arguments.hasKey("maxReconnectGapInSeconds")) options.maxReconnectGapInSeconds =
+        arguments.getInt("maxReconnectGapInSeconds")
+      if (arguments.hasKey("authEndpoint")) options.channelAuthorizer =
+        HttpChannelAuthorizer(arguments.getString("authEndpoint"))
+      if (arguments.hasKey("authorizer") && arguments.getBoolean("authorizer")) options.channelAuthorizer =
+        this
+      if (arguments.hasKey("proxy")) {
+        val (host, port) = arguments.getString("proxy")!!.split(':')
+        options.proxy = Proxy(Proxy.Type.HTTP, InetSocketAddress(host, port.toInt()))
+      }
+      pusher = Pusher(arguments.getString("apiKey"), options)
       Log.i(TAG, "Start $pusher")
       promise.resolve(null)
     } catch (e: Exception) {
@@ -160,8 +159,7 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
     authorizerMutex[key]!!.acquire()
     val authParams = authorizerResult.remove(key)!!
     val gson = Gson()
-    val json = gson.toJson(authParams.toHashMap())
-    return json
+    return gson.toJson(authParams.toHashMap())
   }
 
   @ReactMethod
@@ -198,12 +196,23 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
 
   override fun onEvent(event: PusherEvent) {
     // Log.i(TAG, "Received event with data: $event")
+    // The java sdk transforms some events from pusher_internal
+    // to pusher:... events, we translate them back.
+    val finalEvent = if (event.eventName === "pusher:subscription_count") {
+      PusherEvent(
+        "pusher_internal:subscription_count",
+        event.channelName,
+        event.userId,
+        event.data)
+    } else {
+      event
+    }
     emitEvent(
       "onEvent", mapOf(
-        "channelName" to event.channelName,
-        "eventName" to event.eventName,
-        "userId" to event.userId,
-        "data" to event.data
+        "channelName" to finalEvent.channelName,
+        "eventName" to finalEvent.eventName,
+        "userId" to finalEvent.userId,
+        "data" to finalEvent.data
       )
     )
   }

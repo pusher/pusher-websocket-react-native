@@ -47,6 +47,7 @@ a minimal application to connect to a channel and send events.
       - [`onSubscriptionSucceeded`](#onsubscriptionsucceeded)
       - [`onSubscriptionError`](#onsubscriptionerror)
       - [`onDecryptionFailure`](#ondecryptionfailure)
+      - [`onSubscriptionCount`](#onsubscriptioncount)
       - [`onMemberAdded`](#onmemberadded)
       - [`onMemberRemoved`](#onmemberremoved)
       - [`onAuthorizer`](#onauthorizer)
@@ -134,6 +135,7 @@ try {
     onDecryptionFailure,
     onMemberAdded,
     onMemberRemoved,
+    onSubscriptionCount,
   });
 
   await pusher.subscribe({ channelName });
@@ -235,6 +237,17 @@ function onDecryptionFailure(event:string, string reason:string) {
 }
 ```
 Used with private channels only. Use this if you want to be notified if any messages fail to decrypt.
+
+#### `onSubscriptionCount`
+
+```typescript
+function onSubscriptionCount(subscriptionCount:number) {
+  console.log(`onSubscriptionSucceeded: ${subscriptionCount}`);
+}
+```
+
+is an event that can be manually enabled on the server to count the number of connections that are currently subscribed to a particular channel. They work with all channel types, except presence channels.
+See [Counting live users at scale with subscription_count events](https://blog.pusher.com/counting-live-users-at-scale-with-subscription-count-events/) for more information.
 
 #### `onMemberAdded`
 
@@ -400,11 +413,11 @@ The easiest way to find out when a channel has been successfully subscribed to i
 ```typescript
 const pusher = Pusher.getInstance();
 const channels = {};
-await pusher.init(
+await pusher.init({
   apiKey: API_KEY,
   cluster: API_CLUSTER,
   authEndPoint: "https://your-server.com/pusher/auth"
-);
+});
 const myChannel = await pusher.subscribe(
   channelName:'presence-my-channel',
   onSubscriptionSucceeded: (channelName, data) => {
@@ -446,16 +459,16 @@ These are bound to a specific channel. You can reuse event names in different pa
 
 ```typescript
 const pusher = Pusher.getInstance();
-await pusher.init(
+await pusher.init({
   apiKey: API_KEY,
   cluster: API_CLUSTER
-);
-const myChannel = await pusher.subscribe(
+});
+const myChannel = await pusher.subscribe({
   channelName: "my-channel",
   onEvent: (event) => {
     console.log(`Got channel event: ${event}`);
   }
-);
+});
 await pusher.connect();
 ```
 
@@ -465,16 +478,16 @@ You can attach behavior to these events regardless of the channel the event is b
 
 ```typescript
 const pusher = Pusher.getInstance();
-await pusher.init(
+await pusher.init({
   apiKey: API_KEY,
   cluster: API_CLUSTER,
   onEvent: (event) {
     console.log(`Got event: ${event}`);
   }
-);
-const myChannel = await pusher.subscribe(
+});
+const myChannel = await pusher.subscribe({
   channelName: "my-channel"
-);
+});
 ```
 
 ### PusherEvent

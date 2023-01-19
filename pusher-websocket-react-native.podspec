@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
 
   s.source_files = "ios/**/*.{h,m,mm,swift}"
   s.requires_arc = true
-  s.dependency 'PusherSwift', '~> 10.1'
+  s.dependency 'PusherSwift', '~> 10.1.1'
   s.dependency 'React'
   s.framework    = 'Network'
   s.swift_version = '5'
