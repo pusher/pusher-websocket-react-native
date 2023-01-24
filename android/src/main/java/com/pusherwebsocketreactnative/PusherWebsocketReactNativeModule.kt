@@ -2,7 +2,6 @@ package com.pusherwebsocketreactnative
 
 import android.util.Log
 import com.facebook.react.bridge.*
-import com.facebook.react.modules.core.DeviceEventManagerModule
 import com.google.gson.Gson
 import com.pusher.client.ChannelAuthorizer
 import com.pusher.client.Pusher
@@ -27,20 +26,10 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   private val authorizerMutex = mutableMapOf<String, Semaphore>()
   private val authorizerResult = mutableMapOf<String, ReadableMap>()
 
+  private val pusherEventEmitter = PusherEventEmitter(reactContext)
+
   override fun getName(): String {
     return "PusherWebsocketReactNative"
-  }
-
-  private fun emitEvent(eventName: String, params: Any?) {
-    val jsModule = this.reactApplicationContext
-      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-    if (params is Map<*, *>) {
-      jsModule.emit(eventName, Arguments.makeNativeMap(params as Map<String, Any>))
-    }
-
-    if (params is String) {
-      jsModule.emit(eventName, params)
-    }
   }
 
   @ReactMethod
@@ -148,7 +137,7 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   }
 
   override fun authorize(channelName: String, socketId: String): String? {
-    emitEvent(
+    pusherEventEmitter.emit(
       "onAuthorizer", mapOf(
         "channelName" to channelName,
         "socketId" to socketId
@@ -173,7 +162,7 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
 
   // Event handlers
   override fun onConnectionStateChange(change: ConnectionStateChange) {
-    emitEvent(
+    pusherEventEmitter.emit(
       "onConnectionStateChange", mapOf(
         "previousState" to change.previousState.toString(),
         "currentState" to change.currentState.toString()
@@ -184,7 +173,7 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   override fun onSubscriptionSucceeded(channelName: String) {
     // For presence channels we wait for the onUsersInformationReceived event.
     if (!channelName.startsWith("presence-")) {
-      emitEvent(
+      pusherEventEmitter.emit(
         "onEvent", mapOf(
           "channelName" to channelName,
           "eventName" to "pusher_internal:subscription_succeeded",
@@ -195,7 +184,6 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   }
 
   override fun onEvent(event: PusherEvent) {
-    // Log.i(TAG, "Received event with data: $event")
     // The java sdk transforms some events from pusher_internal
     // to pusher:... events, we translate them back.
     val finalEvent = if (event.eventName === "pusher:subscription_count") {
@@ -207,7 +195,7 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
     } else {
       event
     }
-    emitEvent(
+    pusherEventEmitter.emit(
       "onEvent", mapOf(
         "channelName" to finalEvent.channelName,
         "eventName" to finalEvent.eventName,
@@ -218,8 +206,7 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   }
 
   override fun onAuthenticationFailure(message: String, e: Exception) {
-    // Log.e(TAG, "Authentication failure due to $message, exception was $e")
-    emitEvent(
+    pusherEventEmitter.emit(
       "onSubscriptionError", mapOf(
         "message" to message,
         "error" to e.toString()
@@ -228,7 +215,6 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   } // Other ChannelEventListener methods
 
   override fun onUsersInformationReceived(channelName: String?, users: MutableSet<User>?) {
-    // Log.i(TAG, "Users received: $users")
     val gson = Gson()
     val channel = pusher!!.getPresenceChannel(channelName)
     val hash = mutableMapOf<String, Any?>()
@@ -243,7 +229,7 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
         "hash" to hash
       )
     )
-    emitEvent(
+    pusherEventEmitter.emit(
       "onEvent", mapOf(
         "channelName" to channelName,
         "eventName" to "pusher_internal:subscription_succeeded",
@@ -254,8 +240,7 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   }
 
   override fun onDecryptionFailure(event: String?, reason: String?) {
-    // Log.e(TAG, "Decryption failure due to $event, exception was $reason")
-    emitEvent(
+    pusherEventEmitter.emit(
       "onDecryptionFailure", mapOf(
         "event" to event,
         "reason" to reason
@@ -264,9 +249,8 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   }
 
   override fun userSubscribed(channelName: String, user: User) {
-    // Log.i(TAG, "A new user joined channel [$channelName]: ${user.id}, ${user.info}")
     val gson = Gson()
-    emitEvent(
+    pusherEventEmitter.emit(
       "onMemberAdded", mapOf(
         "channelName" to channelName,
         "user" to mapOf(
@@ -278,9 +262,8 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   }
 
   override fun userUnsubscribed(channelName: String, user: User) {
-    // Log.i(TAG, "A user left channel [$channelName]: ${user.id}, ${user.info}")
     val gson = Gson()
-    emitEvent(
+    pusherEventEmitter.emit(
       "onMemberRemoved", mapOf(
         "channelName" to channelName,
         "user" to mapOf(
@@ -292,7 +275,7 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   } // Other ChannelEventListener methods
 
   override fun onError(message: String, code: String?, e: Exception?) {
-    emitEvent(
+    pusherEventEmitter.emit(
       "onError", mapOf(
         "message" to message,
         "code" to code,
