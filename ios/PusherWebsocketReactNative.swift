@@ -10,21 +10,23 @@ import Foundation
 
     private let subscriptionErrorType = "SubscriptionError"
     private let authErrorType = "AuthError"
+    private let pusherEventPrefix = "PusherReactNative"
 
     override func supportedEvents() -> [String]! {
-        return ["onConnectionStateChange",
-                "onSubscriptionError",
-                "onSubscriptionCount",
-                "onAuthorizer",
-                "onError",
-                "onDecryptionFailure",
-                "onEvent",
-                "onMemberAdded",
-                "onMemberRemoved"]
+        return ["\(pusherEventPrefix):onConnectionStateChange",
+                "\(pusherEventPrefix):onSubscriptionError",
+                "\(pusherEventPrefix):onSubscriptionCount",
+                "\(pusherEventPrefix):onAuthorizer",
+                "\(pusherEventPrefix):onError",
+                "\(pusherEventPrefix):onDecryptionFailure",
+                "\(pusherEventPrefix):onEvent",
+                "\(pusherEventPrefix):onMemberAdded",
+                "\(pusherEventPrefix):onMemberRemoved"]
     }
 
-    func callback(name:String, body:Any) -> Void {
-        self.sendEvent(withName:name, body:body)
+    private func callback(name:String, body:Any) -> Void {
+        let pusherEventname = "\(pusherEventPrefix):\(name)"
+        self.sendEvent(withName:pusherEventname, body:body)
     }
 
     func initialize(_ args:[String: Any], resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
@@ -130,8 +132,7 @@ import Foundation
             storedAuthHandler(data)
         }
     }
-
-
+    
     public func changedConnectionState(from old: ConnectionState, to new: ConnectionState) {
         self.callback(name:"onConnectionStateChange", body:[
             "previousState": old.stringValue(),
