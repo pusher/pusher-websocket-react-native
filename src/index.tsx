@@ -106,7 +106,9 @@ export class PusherChannel {
 
 export class Pusher {
   private static instance: Pusher;
-  private eventEmitter = new NativeEventEmitter(PusherWebsocketReactNative);
+  private pusherEventEmitter = new NativeEventEmitter(
+    PusherWebsocketReactNative
+  );
 
   public channels = new Map<String, PusherChannel>();
   public connectionState = 'DISCONNECTED';
@@ -120,8 +122,9 @@ export class Pusher {
     return Pusher.instance;
   }
 
-  public addListener(event: string, callback: (event: any) => void) {
-    return this.eventEmitter.addListener(event, callback);
+  private addListener(event: string, callback: (event: any) => void) {
+    const pusherEventName = `PusherReactNative:${event}`;
+    return this.pusherEventEmitter.addListener(pusherEventName, callback);
   }
 
   public init(args: {

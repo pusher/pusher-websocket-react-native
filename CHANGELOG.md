@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+
+* [FIXED] Fixed event name conflicts with other libs using RCTDeviceEventEmitter
+
 ## 1.2.0
 
 * [CHANGED] Remove mutex locks in favor of storing callbacks so onAuthorizer does no longer freeze the app on iOS
