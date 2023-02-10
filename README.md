@@ -16,7 +16,7 @@ For tutorials and more in-depth information about Pusher Channels, visit our [of
 ### Deployment targets
 
 - iOS 13.0 and above
-- Android 6.0 and above
+- Android 7 and above. Android 6 will require [desugaring](https://developer.android.com/studio/write/java8-support#library-desugaring).
 
 ## Example Application
 
