@@ -209,7 +209,16 @@ export class Pusher {
         default:
           const pusherEvent = new PusherEvent(event);
           args.onEvent?.(pusherEvent);
-          channel.onEvent?.(pusherEvent);
+          if (channel && channel.onEvent) {
+            const eventPayload = pusherEvent;
+            try {
+              channel.onEvent(eventPayload);
+            } catch (error) {
+              console.error(`Error occurred while handling event: ${error}`);
+            }
+          } else {
+            console.warn('Channel or event handler is missing.');
+          }
           break;
       }
     });
