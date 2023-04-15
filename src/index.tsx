@@ -294,8 +294,8 @@ export class Pusher {
   }
 
   public async unsubscribe({ channelName }: { channelName: string }) {
-    this.channels.delete(channelName);
     await PusherWebsocketReactNative.unsubscribe(channelName);
+    this.channels.delete(channelName);
   }
 
   public async trigger(event: PusherEvent) {
