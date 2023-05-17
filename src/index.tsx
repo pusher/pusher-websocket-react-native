@@ -209,7 +209,7 @@ export class Pusher {
         default:
           const pusherEvent = new PusherEvent(event);
           args.onEvent?.(pusherEvent);
-          channel.onEvent?.(pusherEvent);
+          channel?.onEvent?.(pusherEvent);
           break;
       }
     });
@@ -287,10 +287,15 @@ export class Pusher {
     onMemberRemoved?: (member: PusherMember) => void;
     onEvent?: (event: PusherEvent) => void;
   }) {
-    const channel = new PusherChannel(args);
-    this.channels.set(args.channelName, channel);
+    const channel = this.channels.get(args.channelName);
+    if (channel) {
+      return channel;
+    }
+
+    const newChannel = new PusherChannel(args);
     await PusherWebsocketReactNative.subscribe(args.channelName);
-    return channel;
+    this.channels.set(args.channelName, newChannel);
+    return newChannel;
   }
 
   public async unsubscribe({ channelName }: { channelName: string }) {

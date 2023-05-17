@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.2
+
+* [FIXED] Crash when a user subscribes to a channel twice on Android
+* [FIXED] Wait for unsubscription before deleting the local channel (#88)
+
 ## 1.2.1
 
 * [FIXED] Fixed event name conflicts with other libs using RCTDeviceEventEmitter
