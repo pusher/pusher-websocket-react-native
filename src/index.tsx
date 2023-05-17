@@ -287,8 +287,7 @@ export class Pusher {
     onMemberRemoved?: (member: PusherMember) => void;
     onEvent?: (event: PusherEvent) => void;
   }) {
-    const channel = this.channels.get(args.channelName)
-    
+    const channel = this.channels.get(args.channelName);
     if (channel) {
       return channel;
     }
