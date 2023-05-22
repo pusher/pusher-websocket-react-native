@@ -172,7 +172,7 @@ If no messages are received after this time period (in seconds),  the ping messa
 
 #### `apiKey (string)`
 
-You can get your `APP_KEY` and `APP_CLUSTER` from the the App page on the App Keys section in your [Dashboard](https://dashboard.pusher.com/)
+You can get your `APP_KEY` and `APP_CLUSTER` from the the App page on the App Keys section in your [Pusher Channels Dashboard](https://dashboard.pusher.com/)
 
 #### `authEndpoint (string)`
 
