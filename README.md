@@ -125,7 +125,7 @@ const pusher = Pusher.getInstance();
 try {
   await pusher.init({
     apiKey: APP_KEY,
-    cluster,
+    cluster: APP_CLUSTER,
     // authEndpoint: '<YOUR ENDPOINT URI>',
     onConnectionStateChange,
     onError,
