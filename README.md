@@ -124,8 +124,8 @@ const pusher = Pusher.getInstance();
 
 try {
   await pusher.init({
-    apiKey,
-    cluster,
+    apiKey: APP_KEY,
+    cluster: APP_CLUSTER,
     // authEndpoint: '<YOUR ENDPOINT URI>',
     onConnectionStateChange,
     onError,
@@ -172,7 +172,7 @@ If no messages are received after this time period (in seconds),  the ping messa
 
 #### `apiKey (string)`
 
-You can get your `API_KEY` and `API_CLUSTER` from the [Pusher Channels dashboard](https://dashboard.pusher.com/).
+You can get your `APP_KEY` and `APP_CLUSTER` from the the App page on the App Keys section in your [Pusher Channels Dashboard](https://dashboard.pusher.com/)
 
 #### `authEndpoint (string)`
 
