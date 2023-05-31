@@ -186,11 +186,14 @@ export class Pusher {
           // Depending on the platform implementation we get json or a Map.
           var decodedData = data instanceof Object ? data : JSON.parse(data);
           for (const _userId in decodedData?.presence?.hash) {
-            const userInfo = decodedData?.presence?.hash[_userId];
-            var member = new PusherMember(_userId, userInfo);
-            channel.members.set(member.userId, member);
-            if (_userId === userId) {
-              channel.me = member;
+            if (channel) {
+              const userInfo = decodedData?.presence?.hash[_userId];
+              var member = new PusherMember(_userId, userInfo);
+              channel.members?.set(member.userId, member);
+
+              if (_userId === userId) {
+                channel.me = member;
+              }
             }
           }
           args.onSubscriptionSucceeded?.(channelName, decodedData);
