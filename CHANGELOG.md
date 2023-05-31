@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.3
+
+* [CHANGED] Bump pusher-websocket-swift SDK to 10.1.3
+* [FIXED] Crash when receiving an event while the app is in background 
+
 ## 1.2.2
 
 * [FIXED] Crash when a user subscribes to a channel twice on Android
