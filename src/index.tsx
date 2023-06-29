@@ -324,7 +324,7 @@ export class Pusher {
     return await PusherWebsocketReactNative.getSocketId();
   }
 
-  public getChannel(channelName: string): PusherChannel {
-    return this.channels.get(channelName)!;
+  public getChannel(channelName: string): PusherChannel | undefined {
+    return this.channels.get(channelName);
   }
 }
