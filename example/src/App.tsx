@@ -115,7 +115,12 @@ export default function App() {
     log(
       `onSubscriptionSucceeded: ${channelName} data: ${JSON.stringify(data)}`
     );
-    const channel: PusherChannel = pusher.getChannel(channelName);
+    const channel: PusherChannel | undefined = pusher.getChannel(channelName);
+
+    if (!channel) {
+      return;
+    }
+
     const me = channel.me;
     onChangeMembers([...channel.members.values()]);
     log(`Me: ${me}`);
@@ -144,13 +149,23 @@ export default function App() {
 
   const onMemberAdded = (channelName: string, member: PusherMember) => {
     log(`onMemberAdded: ${channelName} user: ${member}`);
-    const channel: PusherChannel = pusher.getChannel(channelName);
+    const channel: PusherChannel | undefined = pusher.getChannel(channelName);
+
+    if (!channel) {
+      return;
+    }
+
     onChangeMembers([...channel.members.values()]);
   };
 
   const onMemberRemoved = (channelName: string, member: PusherMember) => {
     log(`onMemberRemoved: ${channelName} user: ${member}`);
-    const channel: PusherChannel = pusher.getChannel(channelName);
+    const channel: PusherChannel | undefined = pusher.getChannel(channelName);
+
+    if (!channel) {
+      return;
+    }
+
     onChangeMembers([...channel.members.values()]);
   };
 
