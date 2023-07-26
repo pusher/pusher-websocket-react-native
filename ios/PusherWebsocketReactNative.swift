@@ -3,8 +3,7 @@ import Foundation
 
 @objc(PusherWebsocketReactNative)
 @objcMembers class PusherWebsocketReactNative: RCTEventEmitter, PusherDelegate, Authorizer {
-    private static var shared: PusherWebsocketReactNative!
-    private static var pusher: Pusher!
+    private var pusher: Pusher!
 
     private var authorizerCompletionHandlers = [String: ([String:String]) -> Void]()
     private var authorizerCompletionHandlerTimeout = 10 // seconds
@@ -12,12 +11,6 @@ import Foundation
     private let subscriptionErrorType = "SubscriptionError"
     private let authErrorType = "AuthError"
     private let pusherEventPrefix = "PusherReactNative"
-
-    override init() {
-        super.init()
-
-        PusherWebsocketReactNative.shared = self
-    }
 
     override func supportedEvents() -> [String]! {
         return ["\(pusherEventPrefix):onConnectionStateChange",
@@ -33,19 +26,18 @@ import Foundation
 
     private func callback(name:String, body:Any) -> Void {
         let pusherEventname = "\(pusherEventPrefix):\(name)"
-        PusherWebsocketReactNative.shared.sendEvent(withName:pusherEventname, body:body)
+        self.sendEvent(withName:pusherEventname, body:body)
     }
 
     func initialize(_ args:[String: Any], resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
-        if PusherWebsocketReactNative.pusher != nil {
-            PusherWebsocketReactNative.pusher.unsubscribeAll()
-            PusherWebsocketReactNative.pusher.disconnect()
+        if pusher != nil {
+            pusher.disconnect()
         }
         var authMethod:AuthMethod = .noMethod
         if args["authEndpoint"] is String {
             authMethod = .endpoint(authEndpoint: args["authEndpoint"] as! String)
         } else if args["authorizer"] is Bool {
-            authMethod = .authorizer(authorizer: PusherWebsocketReactNative.shared)
+            authMethod = .authorizer(authorizer: self)
         }
         var host:PusherHost = .defaultHost
         if args["host"] is String {
@@ -85,23 +77,23 @@ import Foundation
             useTLS: useTLS,
             activityTimeout: activityTimeout
         )
-        PusherWebsocketReactNative.pusher = Pusher(key: args["apiKey"] as! String, options: options)
+        pusher = Pusher(key: args["apiKey"] as! String, options: options)
         if args["maxReconnectionAttempts"] is Int {
-            PusherWebsocketReactNative.pusher.connection.reconnectAttemptsMax = (args["maxReconnectionAttempts"] as! Int)
+            pusher.connection.reconnectAttemptsMax = (args["maxReconnectionAttempts"] as! Int)
         }
         if args["maxReconnectGapInSeconds"] is TimeInterval {
-            PusherWebsocketReactNative.pusher.connection.maxReconnectGapInSeconds = (args["maxReconnectGapInSeconds"] as! TimeInterval)
+            pusher.connection.maxReconnectGapInSeconds = (args["maxReconnectGapInSeconds"] as! TimeInterval)
         }
         if args["pongTimeout"] is Int {
-            PusherWebsocketReactNative.pusher.connection.pongResponseTimeoutInterval = args["pongTimeout"] as! TimeInterval / 1000.0
+            pusher.connection.pongResponseTimeoutInterval = args["pongTimeout"] as! TimeInterval / 1000.0
         }
 
         if let authorizerTimeoutInSeconds = args["authorizerTimeoutInSeconds"] as? Int {
-            PusherWebsocketReactNative.shared.authorizerCompletionHandlerTimeout = authorizerTimeoutInSeconds
+            self.authorizerCompletionHandlerTimeout = authorizerTimeoutInSeconds
         }
 
-        PusherWebsocketReactNative.pusher.connection.delegate = PusherWebsocketReactNative.shared
-        PusherWebsocketReactNative.pusher.bind(eventCallback: onEvent)
+        pusher.connection.delegate = self
+        pusher.bind(eventCallback: onEvent)
         resolve(nil)
     }
 
@@ -110,7 +102,7 @@ import Foundation
     }
 
     public func fetchAuthValue(socketID: String, channelName: String, completionHandler: @escaping (PusherAuth?) -> Void) {
-        PusherWebsocketReactNative.shared.callback(name:"onAuthorizer", body: [
+        self.callback(name:"onAuthorizer", body: [
             "socketId": socketID,
             "channelName": channelName
         ])
@@ -126,9 +118,9 @@ import Foundation
         authorizerCompletionHandlers[key] = authCallback
 
         // the JS thread might not call onAuthorizer – we need to cleanup the completion handler after timeout
-        let timeout = DispatchTimeInterval.seconds(PusherWebsocketReactNative.shared.authorizerCompletionHandlerTimeout)
+        let timeout = DispatchTimeInterval.seconds(self.authorizerCompletionHandlerTimeout)
         DispatchQueue.main.asyncAfter(deadline: .now() + timeout) {
-            if let storedAuthHandler = PusherWebsocketReactNative.shared.authorizerCompletionHandlers.removeValue(forKey: key) {
+            if let storedAuthHandler = self.authorizerCompletionHandlers.removeValue(forKey: key) {
                 storedAuthHandler(["auth": "<authorizer_timeout>:error"])
             }
         }
@@ -140,9 +132,9 @@ import Foundation
             storedAuthHandler(data)
         }
     }
-
+    
     public func changedConnectionState(from old: ConnectionState, to new: ConnectionState) {
-        PusherWebsocketReactNative.shared.callback(name:"onConnectionStateChange", body:[
+        self.callback(name:"onConnectionStateChange", body:[
             "previousState": old.stringValue(),
             "currentState": new.stringValue()
         ])
@@ -164,7 +156,7 @@ import Foundation
             type = authErrorType
         }
 
-        PusherWebsocketReactNative.shared.callback(name:"onSubscriptionError", body:[
+        self.callback(name:"onSubscriptionError", body:[
             "message": (error != nil) ? error!.localizedDescription : ((data != nil) ? data! : error.debugDescription),
             "type": type,
             "code": code,
@@ -173,7 +165,7 @@ import Foundation
     }
 
     public func receivedError(error: PusherError) {
-        PusherWebsocketReactNative.shared.callback(
+        self.callback(
             name:"onError", body:[
                 "message": error.message,
                 "code": error.code ?? -1,
@@ -183,7 +175,7 @@ import Foundation
     }
 
     public func failedToDecryptEvent(eventName: String, channelName: String, data: String?) {
-        PusherWebsocketReactNative.shared.callback(
+        self.callback(
             name:"onDecryptionFailure", body:[
                 "eventName": eventName,
                 "reason": data
@@ -192,29 +184,29 @@ import Foundation
     }
 
     public func connect(_ resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
-        PusherWebsocketReactNative.pusher.connect()
+        pusher.connect()
         resolve(nil)
     }
 
     public func disconnect(_ resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
-        PusherWebsocketReactNative.pusher.disconnect()
+        pusher.disconnect()
         resolve(nil)
     }
 
     public func getSocketId() -> String? {
-        return PusherWebsocketReactNative.pusher.connection.socketId
+        return pusher.connection.socketId
     }
 
     func onEvent(event:PusherEvent) {
         var userId:String? = nil
         var mappedEventName:String? = nil
         if event.eventName == "pusher:subscription_succeeded" {
-            if let channel = PusherWebsocketReactNative.pusher.connection.channels.findPresence(name: event.channelName!) {
+            if let channel = pusher.connection.channels.findPresence(name: event.channelName!) {
                 userId = channel.myId
             }
             mappedEventName = "pusher_internal:subscription_succeeded"
         }
-        PusherWebsocketReactNative.shared.callback(
+        self.callback(
             name:"onEvent",body:[
                 "channelName": event.channelName,
                 "eventName": mappedEventName ?? event.eventName,
@@ -227,25 +219,25 @@ import Foundation
     func subscribe(_ channelName:String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
         if channelName.hasPrefix("presence-") {
             let onMemberAdded:(PusherPresenceChannelMember) -> () = { user in
-                PusherWebsocketReactNative.shared.callback(name:"onMemberAdded", body: [
+                self.callback(name:"onMemberAdded", body: [
                     "channelName": channelName,
                     "user": ["userId": user.userId, "userInfo": user.userInfo ]
                 ])
             }
             let onMemberRemoved:(PusherPresenceChannelMember) -> () = { user in
-                PusherWebsocketReactNative.shared.callback(name:"onMemberRemoved", body: [
+                self.callback(name:"onMemberRemoved", body: [
                     "channelName": channelName,
                     "user": ["userId": user.userId, "userInfo": user.userInfo ]
                 ])
             }
-            PusherWebsocketReactNative.pusher.subscribeToPresenceChannel(
+            pusher.subscribeToPresenceChannel(
                 channelName: channelName,
                 onMemberAdded: onMemberAdded,
                 onMemberRemoved: onMemberRemoved
             )
         } else {
             let onSubscriptionCount:(Int) -> () = { subscriptionCount in
-                PusherWebsocketReactNative.shared.callback(
+                self.callback(
                     name:"onEvent",body:[
                         "channelName": channelName,
                         "eventName": "pusher_internal:subscription_count",
@@ -256,19 +248,19 @@ import Foundation
                     ]
                 )
             }
-            PusherWebsocketReactNative.pusher.subscribe(channelName: channelName,
-                                                        onSubscriptionCountChanged: onSubscriptionCount)
+            pusher.subscribe(channelName: channelName,
+                 onSubscriptionCountChanged: onSubscriptionCount)
         }
         resolve(nil)
     }
 
     func unsubscribe(_ channelName:String, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
-        PusherWebsocketReactNative.pusher.unsubscribe(channelName)
+        pusher.unsubscribe(channelName)
         resolve(nil)
     }
 
     func trigger(_ channelName:String, eventName:String, data:Any, resolve:RCTPromiseResolveBlock,reject:RCTPromiseRejectBlock) {
-        if let channel = PusherWebsocketReactNative.pusher.connection.channels.find(name: channelName) {
+        if let channel = pusher.connection.channels.find(name: channelName) {
             channel.trigger(eventName: eventName, data: data)
         }
         resolve(nil)
