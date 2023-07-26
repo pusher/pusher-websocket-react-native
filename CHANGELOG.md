@@ -2,8 +2,8 @@
 
 ## 1.3.0
 
-* [CHANGED] Use a  when you cannot subscribe to a channel.
-* [FIXED] Now  method returns an optional
+* [CHANGED] Use a promise.resolve when you cannot subscribe to a channel.
+* [FIXED] Now getChannel method returns an optional
 
 ## 1.2.2
 
