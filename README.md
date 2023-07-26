@@ -545,7 +545,7 @@ For more details, refer to [client events](https://pusher.com/docs/channels/usin
 To get the `PusherChannel` instance from the `Pusher` instance you can use the `getChannel(<channelName>)` method:
 
 ```typescript
-const channel = pusher.getChannel("presence-channel");
+const channel = pusher.getChannel("presence-channel"); // return PusherChannel object or undefined
 ```
 
 ## Socket information
