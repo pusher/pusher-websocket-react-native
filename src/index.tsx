@@ -179,7 +179,7 @@ export class Pusher {
       const eventName = event.eventName;
       const data = event.data;
       const userId = event.userId;
-      const channel = this.channels.get(channelName)!;
+      const channel = this.channels.get(channelName);
 
       switch (eventName) {
         case 'pusher_internal:subscription_succeeded':
@@ -188,8 +188,8 @@ export class Pusher {
           for (const _userId in decodedData?.presence?.hash) {
             const userInfo = decodedData?.presence?.hash[_userId];
             var member = new PusherMember(_userId, userInfo);
-            channel.members.set(member.userId, member);
-            if (_userId === userId) {
+            channel?.members.set(member.userId, member);
+            if (_userId === userId && channel) {
               channel.me = member;
             }
           }
@@ -199,12 +199,14 @@ export class Pusher {
         case 'pusher_internal:subscription_count':
           // Depending on the platform implementation we get json or a Map.
           var decodedData = data instanceof Object ? data : JSON.parse(data);
-          channel.subscriptionCount = decodedData.subscription_count;
+          if (channel) {
+            channel.subscriptionCount = decodedData.subscription_count;
+          }
           args.onSubscriptionCount?.(
             channelName,
             decodedData.subscription_count
           );
-          channel.onSubscriptionCount?.(decodedData.subscription_count);
+          channel?.onSubscriptionCount?.(decodedData.subscription_count);
           break;
         default:
           const pusherEvent = new PusherEvent(event);
@@ -322,7 +324,7 @@ export class Pusher {
     return await PusherWebsocketReactNative.getSocketId();
   }
 
-  public getChannel(channelName: string): PusherChannel {
-    return this.channels.get(channelName)!;
+  public getChannel(channelName: string): PusherChannel | undefined {
+    return this.channels.get(channelName);
   }
 }
