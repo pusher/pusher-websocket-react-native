@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.0
+
+* [CHANGED] Use a  when you cannot subscribe to a channel.
+* [FIXED] Now  method returns an optional
+
 ## 1.2.2
 
 * [FIXED] Crash when a user subscribes to a channel twice on Android
