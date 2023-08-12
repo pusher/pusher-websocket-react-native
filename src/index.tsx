@@ -17,6 +17,16 @@ const PusherWebsocketReactNative = NativeModules.PusherWebsocketReactNative
       }
     );
 
+enum EVENT_TYPE {
+  ON_AUTHORIZER = 'PusherReactNative:onAuthorizer',
+  ON_CONNECTION_STATE_CHANGE = 'PusherReactNative:onConnectionStateChange',
+  ON_SUBSCRIPTION_ERROR = 'PusherReactNative:onSubscriptionError',
+  ON_EVENT = 'PusherReactNative:onEvent',
+  ON_ERROR = 'PusherReactNative:onError',
+  ON_MEMBER_ADDED = 'PusherReactNative:onMemberAdded',
+  ON_MEMBER_REMOVED = 'PusherReactNative:onMemberRemoved',
+}
+
 export interface PusherAuthorizerResult {
   /** required for private channels */
   auth?: string;
@@ -122,8 +132,10 @@ export class Pusher {
     return Pusher.instance;
   }
 
-  private addListener(event: string, callback: (event: any) => void) {
-    const pusherEventName = `PusherReactNative:${event}`;
+  private addListener(
+    pusherEventName: EVENT_TYPE,
+    callback: (event: any) => void
+  ) {
     return this.pusherEventEmitter.addListener(pusherEventName, callback);
   }
 
@@ -162,7 +174,7 @@ export class Pusher {
     onMemberAdded?: (channelName: string, member: PusherMember) => void;
     onMemberRemoved?: (channelName: string, member: PusherMember) => void;
   }) {
-    this.addListener('onConnectionStateChange', (event: any) => {
+    this.addListener(EVENT_TYPE.ON_CONNECTION_STATE_CHANGE, (event: any) => {
       this.connectionState = event.currentState.toUpperCase();
       args.onConnectionStateChange?.(
         event.currentState.toUpperCase(),
@@ -170,11 +182,11 @@ export class Pusher {
       );
     });
 
-    this.addListener('onError', (event: any) =>
+    this.addListener(EVENT_TYPE.ON_ERROR, (event: any) =>
       args.onError?.(event.message, event.code, event.error)
     );
 
-    this.addListener('onEvent', (event: any) => {
+    this.addListener(EVENT_TYPE.ON_EVENT, (event: any) => {
       const channelName = event.channelName;
       const eventName = event.eventName;
       const data = event.data;
@@ -216,7 +228,7 @@ export class Pusher {
       }
     });
 
-    this.addListener('onMemberAdded', (event) => {
+    this.addListener(EVENT_TYPE.ON_MEMBER_ADDED, (event) => {
       const user = event.user;
       const channelName = event.channelName;
       var member = new PusherMember(user.userId, user.userInfo);
@@ -226,7 +238,7 @@ export class Pusher {
       channel?.onMemberAdded?.(member);
     });
 
-    this.addListener('onMemberRemoved', (event) => {
+    this.addListener(EVENT_TYPE.ON_MEMBER_REMOVED, (event) => {
       const user = event.user;
       const channelName = event.channelName;
       var member = new PusherMember(user.userId, user.userInfo);
@@ -236,19 +248,22 @@ export class Pusher {
       channel?.onMemberRemoved?.(member);
     });
 
-    this.addListener('onAuthorizer', async ({ channelName, socketId }) => {
-      const data = await args.onAuthorizer?.(channelName, socketId);
-      if (data) {
-        await PusherWebsocketReactNative.onAuthorizer(
-          channelName,
-          socketId,
-          data
-        );
+    this.addListener(
+      EVENT_TYPE.ON_AUTHORIZER,
+      async ({ channelName, socketId }) => {
+        const data = await args.onAuthorizer?.(channelName, socketId);
+        if (data) {
+          await PusherWebsocketReactNative.onAuthorizer(
+            channelName,
+            socketId,
+            data
+          );
+        }
       }
-    });
+    );
 
     this.addListener(
-      'onSubscriptionError',
+      EVENT_TYPE.ON_SUBSCRIPTION_ERROR,
       async ({ channelName, message, type }) => {
         args.onSubscriptionError?.(channelName, message, type);
       }
@@ -275,6 +290,26 @@ export class Pusher {
 
   public async disconnect() {
     return await PusherWebsocketReactNative.disconnect();
+  }
+
+  private unsubscribeAllChannels() {
+    const channelsCopy = new Map(this.channels);
+    channelsCopy.forEach((channel) => {
+      this.unsubscribe({ channelName: channel.channelName });
+    });
+  }
+
+  private removeAllListeners() {
+    this.pusherEventEmitter.removeAllListeners(EVENT_TYPE.ON_AUTHORIZER);
+    this.pusherEventEmitter.removeAllListeners(EVENT_TYPE.ON_ERROR);
+    this.pusherEventEmitter.removeAllListeners(EVENT_TYPE.ON_EVENT);
+    this.pusherEventEmitter.removeAllListeners(EVENT_TYPE.ON_MEMBER_ADDED);
+    this.pusherEventEmitter.removeAllListeners(EVENT_TYPE.ON_MEMBER_REMOVED);
+  }
+
+  public async resetPusherInstance() {
+    this.removeAllListeners();
+    this.unsubscribeAllChannels();
   }
 
   async subscribe(args: {

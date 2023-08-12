@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.3
+
+* [ADDED] Add resetPusherInstance function to reset all handlers and subscriptions
+
 ## 1.2.2
 
 * [FIXED] Crash when a user subscribes to a channel twice on Android
