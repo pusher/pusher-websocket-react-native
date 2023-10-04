@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.3
+
+* [FIXED] Handle exceptions properly while subscribing to a channel on Android (#104)
+
 ## 1.2.2
 
 * [FIXED] Crash when a user subscribes to a channel twice on Android
