@@ -2,7 +2,8 @@
 
 ## 1.2.3
 
-* [ADDED] Add resetPusherInstance function to reset all handlers and subscriptions
+* [FIXED] Handle exceptions properly while subscribing to a channel on Android (#104)
+
 
 ## 1.2.2
 

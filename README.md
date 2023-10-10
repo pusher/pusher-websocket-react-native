@@ -412,7 +412,7 @@ The easiest way to find out when a channel has been successfully subscribed to i
 
 ```typescript
 const pusher = Pusher.getInstance();
-const channels = {};
+
 await pusher.init({
   apiKey: API_KEY,
   cluster: API_CLUSTER,
