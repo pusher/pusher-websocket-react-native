@@ -174,6 +174,8 @@ export class Pusher {
     onMemberAdded?: (channelName: string, member: PusherMember) => void;
     onMemberRemoved?: (channelName: string, member: PusherMember) => void;
   }) {
+    this.removeAllListeners();
+
     this.addListener(
       PusherEventName.ON_CONNECTION_STATE_CHANGE,
       (event: any) => {
