@@ -174,13 +174,16 @@ export class Pusher {
     onMemberAdded?: (channelName: string, member: PusherMember) => void;
     onMemberRemoved?: (channelName: string, member: PusherMember) => void;
   }) {
-    this.addListener(PusherEventName.ON_CONNECTION_STATE_CHANGE, (event: any) => {
-      this.connectionState = event.currentState.toUpperCase();
-      args.onConnectionStateChange?.(
-        event.currentState.toUpperCase(),
-        event.previousState.toUpperCase()
-      );
-    });
+    this.addListener(
+      PusherEventName.ON_CONNECTION_STATE_CHANGE,
+      (event: any) => {
+        this.connectionState = event.currentState.toUpperCase();
+        args.onConnectionStateChange?.(
+          event.currentState.toUpperCase(),
+          event.previousState.toUpperCase()
+        );
+      }
+    );
 
     this.addListener(PusherEventName.ON_ERROR, (event: any) =>
       args.onError?.(event.message, event.code, event.error)
@@ -304,7 +307,9 @@ export class Pusher {
     this.pusherEventEmitter.removeAllListeners(PusherEventName.ON_ERROR);
     this.pusherEventEmitter.removeAllListeners(PusherEventName.ON_EVENT);
     this.pusherEventEmitter.removeAllListeners(PusherEventName.ON_MEMBER_ADDED);
-    this.pusherEventEmitter.removeAllListeners(PusherEventName.ON_MEMBER_REMOVED);
+    this.pusherEventEmitter.removeAllListeners(
+      PusherEventName.ON_MEMBER_REMOVED
+    );
   }
 
   public async reset() {
