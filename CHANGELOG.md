@@ -2,13 +2,12 @@
 
 ## 1.3.0
 
-* [ADDED] Add `reset` function to  instance to reset all handlers and subscriptions (#110)
-* [FIXED] Multiple listeners are registered whenever  function is called
+* [ADDED] Add `reset` function to `Pusher` instance to reset all handlers and subscriptions (#110)
+* [FIXED] Multiple listeners are registered whenever `init function is called
 
 ## 1.2.3
 
 * [FIXED] Handle exceptions properly while subscribing to a channel on Android (#104)
-
 
 ## 1.2.2
 
