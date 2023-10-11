@@ -17,7 +17,7 @@ const PusherWebsocketReactNative = NativeModules.PusherWebsocketReactNative
       }
     );
 
-enum EVENT_TYPE {
+enum PusherEventName {
   ON_AUTHORIZER = 'PusherReactNative:onAuthorizer',
   ON_CONNECTION_STATE_CHANGE = 'PusherReactNative:onConnectionStateChange',
   ON_SUBSCRIPTION_ERROR = 'PusherReactNative:onSubscriptionError',
@@ -133,7 +133,7 @@ export class Pusher {
   }
 
   private addListener(
-    pusherEventName: EVENT_TYPE,
+    pusherEventName: PusherEventName,
     callback: (event: any) => void
   ) {
     return this.pusherEventEmitter.addListener(pusherEventName, callback);
@@ -174,19 +174,22 @@ export class Pusher {
     onMemberAdded?: (channelName: string, member: PusherMember) => void;
     onMemberRemoved?: (channelName: string, member: PusherMember) => void;
   }) {
-    this.addListener(EVENT_TYPE.ON_CONNECTION_STATE_CHANGE, (event: any) => {
-      this.connectionState = event.currentState.toUpperCase();
-      args.onConnectionStateChange?.(
-        event.currentState.toUpperCase(),
-        event.previousState.toUpperCase()
-      );
-    });
+    this.addListener(
+      PusherEventName.ON_CONNECTION_STATE_CHANGE,
+      (event: any) => {
+        this.connectionState = event.currentState.toUpperCase();
+        args.onConnectionStateChange?.(
+          event.currentState.toUpperCase(),
+          event.previousState.toUpperCase()
+        );
+      }
+    );
 
-    this.addListener(EVENT_TYPE.ON_ERROR, (event: any) =>
+    this.addListener(PusherEventName.ON_ERROR, (event: any) =>
       args.onError?.(event.message, event.code, event.error)
     );
 
-    this.addListener(EVENT_TYPE.ON_EVENT, (event: any) => {
+    this.addListener(PusherEventName.ON_EVENT, (event: any) => {
       const channelName = event.channelName;
       const eventName = event.eventName;
       const data = event.data;
@@ -228,7 +231,7 @@ export class Pusher {
       }
     });
 
-    this.addListener(EVENT_TYPE.ON_MEMBER_ADDED, (event) => {
+    this.addListener(PusherEventName.ON_MEMBER_ADDED, (event) => {
       const user = event.user;
       const channelName = event.channelName;
       var member = new PusherMember(user.userId, user.userInfo);
@@ -238,7 +241,7 @@ export class Pusher {
       channel?.onMemberAdded?.(member);
     });
 
-    this.addListener(EVENT_TYPE.ON_MEMBER_REMOVED, (event) => {
+    this.addListener(PusherEventName.ON_MEMBER_REMOVED, (event) => {
       const user = event.user;
       const channelName = event.channelName;
       var member = new PusherMember(user.userId, user.userInfo);
@@ -249,7 +252,7 @@ export class Pusher {
     });
 
     this.addListener(
-      EVENT_TYPE.ON_AUTHORIZER,
+      PusherEventName.ON_AUTHORIZER,
       async ({ channelName, socketId }) => {
         const data = await args.onAuthorizer?.(channelName, socketId);
         if (data) {
@@ -263,7 +266,7 @@ export class Pusher {
     );
 
     this.addListener(
-      EVENT_TYPE.ON_SUBSCRIPTION_ERROR,
+      PusherEventName.ON_SUBSCRIPTION_ERROR,
       async ({ channelName, message, type }) => {
         args.onSubscriptionError?.(channelName, message, type);
       }
@@ -300,14 +303,16 @@ export class Pusher {
   }
 
   private removeAllListeners() {
-    this.pusherEventEmitter.removeAllListeners(EVENT_TYPE.ON_AUTHORIZER);
-    this.pusherEventEmitter.removeAllListeners(EVENT_TYPE.ON_ERROR);
-    this.pusherEventEmitter.removeAllListeners(EVENT_TYPE.ON_EVENT);
-    this.pusherEventEmitter.removeAllListeners(EVENT_TYPE.ON_MEMBER_ADDED);
-    this.pusherEventEmitter.removeAllListeners(EVENT_TYPE.ON_MEMBER_REMOVED);
+    this.pusherEventEmitter.removeAllListeners(PusherEventName.ON_AUTHORIZER);
+    this.pusherEventEmitter.removeAllListeners(PusherEventName.ON_ERROR);
+    this.pusherEventEmitter.removeAllListeners(PusherEventName.ON_EVENT);
+    this.pusherEventEmitter.removeAllListeners(PusherEventName.ON_MEMBER_ADDED);
+    this.pusherEventEmitter.removeAllListeners(
+      PusherEventName.ON_MEMBER_REMOVED
+    );
   }
 
-  public async resetPusherInstance() {
+  public async reset() {
     this.removeAllListeners();
     this.unsubscribeAllChannels();
   }
