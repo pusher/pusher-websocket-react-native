@@ -2,7 +2,7 @@
 
 ## 1.3.0
 
-* [ADDED] Add  function to  instance to reset all handlers and subscriptions (#110)
+* [ADDED] Add `reset` function to  instance to reset all handlers and subscriptions (#110)
 * [FIXED] Multiple listeners are registered whenever  function is called
 
 ## 1.2.3
