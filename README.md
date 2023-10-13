@@ -41,6 +41,7 @@ a minimal application to connect to a channel and send events.
       - [`apiKey (string)`](#apikey-string)
       - [`authEndpoint (string)`](#authendpoint-string)
       - [`cluster (string)`](#cluster-string)
+      - [`host (string)`](#host-string)
       - [`useTLS (bool)`](#usetls-bool)
   - [Event Callback parameters](#event-callback-parameters)
       - [`onEvent`](#onevent)
@@ -162,6 +163,7 @@ describes available parameters for each platform:
 | maxReconnectGapInSeconds   | ✅      | ✅  |
 | maxReconnectionAttempts    | ✅      | ✅  |
 | pongTimeout                | ✅      | ✅  |
+| host                       | ✅      | ✅  |
 | proxy                      | ✅      | ⬜️ |
 | useTLS                     | ✅      | ✅  |
 | authorizerTimeoutInSeconds | ⬜️     | ✅  |
@@ -184,6 +186,10 @@ an authorization service](https://pusher.com/docs/channels/server_api/authentica
 #### `cluster (string)`
 
 Specifies the cluster that pusher-js should connect to. Here's the full list of [Pusher clusters](https://pusher.com/docs/clusters). If you do not specify a cluster, `mt1` will be used by default.
+
+#### `host (string)`
+
+Specifies the host that pusher-js should connect to. If you do not specify a host, pusher.com will be used by default.
 
 #### `useTLS (bool)`
 
