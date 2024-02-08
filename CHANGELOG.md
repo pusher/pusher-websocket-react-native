@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1
+
+* [CHANGED] Update Pusher Swift SDK to 10.1.5
+
 ## 1.3.0
 
 * [ADDED] Add `reset` function to `Pusher` instance to reset all handlers and subscriptions (#110)
