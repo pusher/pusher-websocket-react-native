@@ -312,6 +312,8 @@ export class Pusher {
     this.pusherEventEmitter.removeAllListeners(
       PusherEventName.ON_MEMBER_REMOVED
     );
+    this.pusherEventEmitter.removeAllListeners(PusherEventName.ON_CONNECTION_STATE_CHANGE);
+    this.pusherEventEmitter.removeAllListeners(PusherEventName.ON_SUBSCRIPTION_ERROR);
   }
 
   public async reset() {
