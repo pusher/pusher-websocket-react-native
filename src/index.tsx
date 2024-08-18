@@ -141,7 +141,10 @@ export class Pusher {
 
   public init(args: {
     apiKey: string;
-    cluster: string;
+    host?: string;
+    wsPort?: Number;
+    wssPort?: Number;
+    cluster?: string;
     authEndpoint?: string;
     useTLS?: boolean;
     activityTimeout?: Number;
@@ -197,11 +200,11 @@ export class Pusher {
       const data = event.data;
       const userId = event.userId;
       const channel = this.channels.get(channelName);
+      // Depending on the platform implementation we get json or a Map.
+      const decodedData = data instanceof Object ? data : JSON.parse(data);
 
       switch (eventName) {
         case 'pusher_internal:subscription_succeeded':
-          // Depending on the platform implementation we get json or a Map.
-          var decodedData = data instanceof Object ? data : JSON.parse(data);
           for (const _userId in decodedData?.presence?.hash) {
             const userInfo = decodedData?.presence?.hash[_userId];
             var member = new PusherMember(_userId, userInfo);
@@ -214,8 +217,6 @@ export class Pusher {
           channel?.onSubscriptionSucceeded?.(decodedData);
           break;
         case 'pusher_internal:subscription_count':
-          // Depending on the platform implementation we get json or a Map.
-          var decodedData = data instanceof Object ? data : JSON.parse(data);
           if (channel) {
             channel.subscriptionCount = decodedData.subscription_count;
           }
@@ -276,6 +277,9 @@ export class Pusher {
 
     return PusherWebsocketReactNative.initialize({
       apiKey: args.apiKey,
+      host: args.host,
+      wsPort: args.wsPort,
+      wssPort: args.wssPort,
       cluster: args.cluster,
       authEndpoint: args.authEndpoint,
       useTLS: args.useTLS,
@@ -284,7 +288,7 @@ export class Pusher {
       maxReconnectionAttempts: args.maxReconnectionAttempts,
       maxReconnectGapInSeconds: args.maxReconnectGapInSeconds,
       authorizerTimeoutInSeconds: args.authorizerTimeoutInSeconds,
-      authorizer: args.onAuthorizer ? true : false,
+      authorizer: !!args.onAuthorizer,
       proxy: args.proxy,
     });
   }
