@@ -25,6 +25,9 @@ export default function App() {
   const pusher = Pusher.getInstance();
 
   const [apiKey, onChangeApiKey] = React.useState('');
+  const [host, onChangeHost] = React.useState('');
+  const [wsPort, onChangeWsPort] = React.useState(80);
+  const [wssPort, onChangeWssPort] = React.useState(443);
   const [cluster, onChangeCluster] = React.useState('');
   const [channelName, onChangeChannelName] = React.useState('');
   const [eventName, onChangeEventName] = React.useState('');
@@ -40,6 +43,9 @@ export default function App() {
   React.useEffect(() => {
     const getFromStorage = async () => {
       onChangeApiKey((await AsyncStorage.getItem('APIKEY')) || '');
+      onChangeHost((await AsyncStorage.getItem('HOST')) || '');
+      onChangeWsPort((await AsyncStorage.getItem('WS_PORT')) || '');
+      onChangeWssPort((await AsyncStorage.getItem('WSS_PORT')) || '');
       onChangeCluster((await AsyncStorage.getItem('CLUSTER')) || '');
       onChangeChannelName((await AsyncStorage.getItem('CHANNEL')) || '');
       onChangeEventName((await AsyncStorage.getItem('EVENT')) || '');
@@ -54,12 +60,18 @@ export default function App() {
     try {
       await AsyncStorage.multiSet([
         ['APIKEY', apiKey],
+        ['HOST', host],
+        ['WS_PORT', wsPort],
+        ['WSS_PORT', wssPort],
         ['CLUSTER', cluster],
         ['CHANNEL', channelName],
       ]);
 
       await pusher.init({
         apiKey,
+        host,
+        wsPort,
+        wssPort,
         cluster,
         // authEndpoint
         // ============
@@ -225,6 +237,30 @@ export default function App() {
             placeholder="API Key"
             autoCapitalize="none"
             value={apiKey}
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={onChangeHost}
+            value={host}
+            placeholder="Host"
+            autoCapitalize="none"
+            keyboardType="default"
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={onChangeWsPort}
+            value={wsPort}
+            placeholder="80"
+            autoCapitalize="none"
+            keyboardType="default"
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={onChangeWssPort}
+            value={wssPort}
+            placeholder="443"
+            autoCapitalize="none"
+            keyboardType="default"
           />
           <TextInput
             style={styles.input}
