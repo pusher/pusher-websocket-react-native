@@ -142,6 +142,9 @@ export class Pusher {
   public init(args: {
     apiKey: string;
     cluster: string;
+    host?: string;
+    wsPort?: Number;
+    wssPort?: Number;
     authEndpoint?: string;
     useTLS?: boolean;
     activityTimeout?: Number;
@@ -277,6 +280,9 @@ export class Pusher {
     return PusherWebsocketReactNative.initialize({
       apiKey: args.apiKey,
       cluster: args.cluster,
+      host: args.host,
+      wsPort: args.wsPort,
+      wssPort: args.wssPort,
       authEndpoint: args.authEndpoint,
       useTLS: args.useTLS,
       activityTimeout: args.activityTimeout,
