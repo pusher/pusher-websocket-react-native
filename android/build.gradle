@@ -34,8 +34,30 @@ android {
   }
 
   buildTypes {
+    debug {
+      minifyEnabled false
+    }
     release {
       minifyEnabled false
+    }
+  }
+  // Ensure correct order of tasks
+  tasks.configureEach { task ->
+    logger.info("Task Dependency Config: ${task.name}")
+    if (task.name == 'generateDebugRFile') {
+      task.dependsOn(':pusher_pusher-websocket-react-native:processDebugManifest', ':pusher-websocket-react-native:parseDebugLocalResources')
+    }
+    if (task.name == 'compileDebugKotlin') {
+      task.dependsOn(':pusher-websocket-react-native:generateDebugBuildConfig', ':pusher-websocket-react-native:generateDebugRFile', ':pusher-websocket-react-native:compileDebugAidl')
+    }
+    if(task.name == 'copyDebugJniLibsProjectOnly') {
+      task.dependsOn(':pusher-websocket-react-native:mergeDebugNativeLibs')
+    }
+    if(task.name == 'packageDebugAssets') {
+      task.dependsOn(':pusher-websocket-react-native:compileDebugShaders')
+    }
+    if(task.name == 'parseDebugLocalResources') {
+      task.dependsOn(':pusher-websocket-react-native:packageDebugResources')
     }
   }
   lintOptions {
