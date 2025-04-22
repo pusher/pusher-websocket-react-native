@@ -37,22 +37,25 @@ a minimal application to connect to a channel and send events.
     - [Android specific installation](#android-specific-installation)
   - [Initialization](#initialization)
   - [Configuration](#configuration)
-      - [`activityTimeout (double)`](#activitytimeout-double)
-      - [`apiKey (string)`](#apikey-string)
-      - [`authEndpoint (string)`](#authendpoint-string)
-      - [`cluster (string)`](#cluster-string)
-      - [`useTLS (bool)`](#usetls-bool)
+    - [`activityTimeout (double)`](#activitytimeout-double)
+    - [`apiKey (string)`](#apikey-string)
+    - [`authEndpoint (string)`](#authendpoint-string)
+    - [`host (string)`](#host-string)
+    - [`wsPort (string)`](#wsPort-number)
+    - [`wssPort (string)`](#wssPort-number)
+    - [`cluster (string)`](#cluster-string)
+    - [`useTLS (bool)`](#usetls-bool)
   - [Event Callback parameters](#event-callback-parameters)
-      - [`onEvent`](#onevent)
-      - [`onSubscriptionSucceeded`](#onsubscriptionsucceeded)
-      - [`onSubscriptionError`](#onsubscriptionerror)
-      - [`onDecryptionFailure`](#ondecryptionfailure)
-      - [`onSubscriptionCount`](#onsubscriptioncount)
-      - [`onMemberAdded`](#onmemberadded)
-      - [`onMemberRemoved`](#onmemberremoved)
-      - [`onAuthorizer`](#onauthorizer)
-      - [`onConnectionStateChange`](#onconnectionstatechange)
-      - [`onError`](#onerror)
+    - [`onEvent`](#onevent)
+    - [`onSubscriptionSucceeded`](#onsubscriptionsucceeded)
+    - [`onSubscriptionError`](#onsubscriptionerror)
+    - [`onDecryptionFailure`](#ondecryptionfailure)
+    - [`onSubscriptionCount`](#onsubscriptioncount)
+    - [`onMemberAdded`](#onmemberadded)
+    - [`onMemberRemoved`](#onmemberremoved)
+    - [`onAuthorizer`](#onauthorizer)
+    - [`onConnectionStateChange`](#onconnectionstatechange)
+    - [`onError`](#onerror)
   - [Connection handling](#connection-handling)
     - [Connecting](#connecting)
     - [Disconnecting](#disconnecting)
@@ -153,18 +156,21 @@ You can subscribe to channels before calling `connect()`.
 There are a few configuration parameters which can be set for the Pusher client. The following table
 describes available parameters for each platform:
 
-| parameter                  | Android | iOS |
-| -------------------------- | ------- | --- |
-| activityTimeout            | ✅      | ✅  |
-| apiKey                     | ✅      | ✅  |
-| authEndpoint               | ✅      | ✅  |
-| cluster                    | ✅      | ✅  |
-| maxReconnectGapInSeconds   | ✅      | ✅  |
-| maxReconnectionAttempts    | ✅      | ✅  |
-| pongTimeout                | ✅      | ✅  |
-| proxy                      | ✅      | ⬜️ |
-| useTLS                     | ✅      | ✅  |
-| authorizerTimeoutInSeconds | ⬜️     | ✅  |
+| Parameter                  | Android | iOS |
+|----------------------------|:-------:|:---:|
+| activityTimeout            |    ✅    |  ✅  |
+| apiKey                     |    ✅    |  ✅  |
+| authEndpoint               |    ✅    |  ✅  |
+| host                       |    ✅    |  ✅  |
+| wsPort                     |    ✅    |  ✅  |
+| wssPort                    |    ✅    |  ✅  |
+| cluster                    |    ✅    |  ✅  |
+| maxReconnectGapInSeconds   |    ✅    |  ✅  |
+| maxReconnectionAttempts    |    ✅    |  ✅  |
+| pongTimeout                |    ✅    |  ✅  |
+| proxy                      |    ✅    | ⬜️  |
+| useTLS                     |    ✅    |  ✅  |
+| authorizerTimeoutInSeconds |   ⬜️    |  ✅  |
 
 #### `activityTimeout (double)`
 
@@ -180,6 +186,18 @@ The authEndpoint provides a URL that the
 Pusher client will call to authorize users
 for a presence channel. Learn [how to implement
 an authorization service](https://pusher.com/docs/channels/server_api/authenticating-users/)
+
+#### `host (string)`
+
+Specifies the host that pusher-js should connect to. If you do not specify a host, pusher's default host will be used by default.
+
+#### `wsPort (number)`
+
+Specifies the wsPort that pusher-js should connect to. If you do not specify a wsPort, If you do not specify a wsPort, `80` will be used by default.
+
+#### `wssPort (number)`
+
+Specifies the wssPort that pusher-js should connect to. If you do not specify a wssPort, If you do not specify a wssPort, `443` will be used by default.
 
 #### `cluster (string)`
 
@@ -561,7 +579,6 @@ const socketId = await pusher.getSocketId();
 - If you have found a bug, please open an issue.
 - If you have a feature request, open an issue.
 - If you want to contribute, submit a pull request.
-- If you do not receive a timely response, feel free to check our [support portal](https://docs.bird.com/pusher).
 
 ## Credits
 
