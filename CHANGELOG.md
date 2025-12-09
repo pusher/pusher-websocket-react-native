@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.2
+
+* [CHANGED] Update Pusher Swift SDK to 10.1.9 to fix reconnections getting stuck after network disruptions
+
 ## 1.3.1
 
 * [CHANGED] Update Pusher Swift SDK to 10.1.5
