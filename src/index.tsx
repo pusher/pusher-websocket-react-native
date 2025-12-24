@@ -352,10 +352,11 @@ export class Pusher {
       event.channelName.startsWith('private-') ||
       event.channelName.startsWith('presence-')
     ) {
+      const data = Platform.OS === 'android' ? JSON.stringify(event.data ?? {}) : event.data
       await PusherWebsocketReactNative.trigger(
         event.channelName,
         event.eventName,
-        event.data
+        data
       );
     } else {
       throw 'Trigger event is only for private/presence channels';
