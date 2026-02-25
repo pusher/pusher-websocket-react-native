@@ -71,7 +71,7 @@ import Foundation
         }
         var activityTimeout:TimeInterval? = nil
         if args["activityTimeout"] is TimeInterval {
-            activityTimeout = args["activityTimeout"] as! Double / 1000.0
+            activityTimeout = args["activityTimeout"] as! Double
         }
         var path:String? = nil
         if args["path"] is String {
@@ -93,7 +93,7 @@ import Foundation
             PusherWebsocketReactNative.pusher.connection.maxReconnectGapInSeconds = (args["maxReconnectGapInSeconds"] as! TimeInterval)
         }
         if args["pongTimeout"] is Int {
-            PusherWebsocketReactNative.pusher.connection.pongResponseTimeoutInterval = args["pongTimeout"] as! TimeInterval / 1000.0
+            PusherWebsocketReactNative.pusher.connection.pongResponseTimeoutInterval = args["pongTimeout"] as! TimeInterval
         }
 
         if let authorizerTimeoutInSeconds = args["authorizerTimeoutInSeconds"] as? Int {
