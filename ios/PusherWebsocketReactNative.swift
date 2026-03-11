@@ -32,6 +32,7 @@ import Foundation
     }
 
     private func callback(name:String, body:Any) -> Void {
+        guard PusherWebsocketReactNative.shared.bridge != nil else { return }
         let pusherEventname = "\(pusherEventPrefix):\(name)"
         PusherWebsocketReactNative.shared.sendEvent(withName:pusherEventname, body:body)
     }

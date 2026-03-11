@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.4
+
+* [FIXED] Prevent NSInternalInconsistencyException crash when Pusher events fire before the React Native bridge is ready (iOS)
+
 ## 1.3.3
 
 * [CHANGED] Update Pusher Swift SDK to 10.1.10 to fix zombie connections caused by unrecognised POSIX errors
