@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.3
+
+* [CHANGED] Update Pusher Swift SDK to 10.1.10 to fix zombie connections caused by unrecognised POSIX errors
+
 ## 1.3.2
 
 * [CHANGED] Update Pusher Swift SDK to 10.1.9 to fix reconnections getting stuck after network disruptions
