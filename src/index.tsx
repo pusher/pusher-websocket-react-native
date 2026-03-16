@@ -106,11 +106,12 @@ export class PusherChannel {
     });
   }
 
-  async trigger(event: PusherEvent) {
-    if (event.channelName !== this.channelName) {
+  async trigger(event: Omit<PusherEvent, 'channelName'> & Partial<Pick<PusherEvent, 'channelName'>>) {
+    const channelName = event.channelName ?? this.channelName;
+    if (channelName !== this.channelName) {
       throw 'Event is not for this channel';
     }
-    return Pusher.getInstance().trigger(event);
+    return Pusher.getInstance().trigger({ ...event, channelName });
   }
 }
 
@@ -306,12 +307,12 @@ export class Pusher {
 
   private removeAllListeners() {
     this.pusherEventEmitter.removeAllListeners(PusherEventName.ON_AUTHORIZER);
+    this.pusherEventEmitter.removeAllListeners(PusherEventName.ON_CONNECTION_STATE_CHANGE);
     this.pusherEventEmitter.removeAllListeners(PusherEventName.ON_ERROR);
     this.pusherEventEmitter.removeAllListeners(PusherEventName.ON_EVENT);
     this.pusherEventEmitter.removeAllListeners(PusherEventName.ON_MEMBER_ADDED);
-    this.pusherEventEmitter.removeAllListeners(
-      PusherEventName.ON_MEMBER_REMOVED
-    );
+    this.pusherEventEmitter.removeAllListeners(PusherEventName.ON_MEMBER_REMOVED);
+    this.pusherEventEmitter.removeAllListeners(PusherEventName.ON_SUBSCRIPTION_ERROR);
   }
 
   public async reset() {

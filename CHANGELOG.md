@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.5
+
+* [FIXED] `PusherChannel.trigger()` now accepts an event without `channelName`, defaulting to the channel's own name, aligning the implementation with the documented API
+* [FIXED] `removeAllListeners()` now correctly removes all 7 event listeners; `ON_CONNECTION_STATE_CHANGE` and `ON_SUBSCRIPTION_ERROR` were previously not cleared on `init()` and `reset()` calls
+
 ## 1.3.4
 
 * [FIXED] Prevent NSInternalInconsistencyException crash when Pusher events fire before the React Native bridge is ready (iOS)
