@@ -75,14 +75,15 @@ PODS:
   - glog (0.3.5)
   - hermes-engine (0.70.5)
   - libevent (2.1.12)
-  - NWWebSocket (0.5.4)
+  - NWWebSocket (0.5.10)
   - OpenSSL-Universal (1.1.1100)
-  - pusher-websocket-react-native (1.3.0):
-    - PusherSwift (~> 10.1.5)
+  - pusher-websocket-react-native (1.3.4):
+    - PusherSwift (~> 10.1.10)
     - React
-  - PusherSwift (10.1.5):
-    - NWWebSocket (~> 0.5.4)
-    - TweetNacl (~> 1.0.0)
+  - PusherSwift (10.1.10):
+    - NWWebSocket (~> 0.5.10)
+    - PusherTweetNacl (~> 1.2.0)
+  - PusherTweetNacl (1.2.0)
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -378,7 +379,6 @@ PODS:
   - RNCAsyncStorage (1.17.10):
     - React-Core
   - SocketRocket (0.6.1)
-  - TweetNacl (1.0.2)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
@@ -463,8 +463,8 @@ SPEC REPOS:
     - NWWebSocket
     - OpenSSL-Universal
     - PusherSwift
+    - PusherTweetNacl
     - SocketRocket
-    - TweetNacl
     - YogaKit
 
 EXTERNAL SOURCES:
@@ -542,7 +542,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  boost: a7c83b31436843459a1961bfd74b96033dc77234
+  boost: 9fa78656d705f55b1220151d997e57e2a3f2cde0
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   FBLazyVector: affa4ba1bfdaac110a789192f4d452b053a86624
@@ -560,25 +560,26 @@ SPEC CHECKSUMS:
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   hermes-engine: 7fe5fc6ef707b7fdcb161b63898ec500e285653d
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  NWWebSocket: 040d22f23438cc09aaeabf537beff67699c3c76d
+  NWWebSocket: 873eb4b18acd0317da70cdba388d792a3187ce00
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
-  pusher-websocket-react-native: f344fb102b32172061cd7f8c8f21b03af112be46
-  PusherSwift: cad631bad86cfff4b8458dce1310a7774e469b1f
-  RCT-Folly: 0080d0a6ebf2577475bda044aa59e2ca1f909cda
+  pusher-websocket-react-native: 60be71a76b3a754c9f3097eb1cc2d4a59720e2fd
+  PusherSwift: 6022fe6584b4317dc5c177091292b2a4d80a8c35
+  PusherTweetNacl: 015f56f2cf010e718703f2bd9bca66fdcc91b208
+  RCT-Folly: fd2673f5bfadb2a8173799b6965b892a67ae31d9
   RCTRequired: 21229f84411088e5d8538f21212de49e46cc83e2
   RCTTypeSafety: 62eed57a32924b09edaaf170a548d1fc96223086
   React: f0254ccddeeef1defe66c6b1bb9133a4f040792b
   React-bridging: e46911666b7ec19538a620a221d6396cd293d687
   React-callinvoker: 66b62e2c34546546b2f21ab0b7670346410a2b53
   React-Codegen: b6999435966df3bdf82afa3f319ba0d6f9a8532a
-  React-Core: dabbc9d1fe0a11d884e6ee1599789cf8eb1058a5
+  React-Core: 0072bd91c2e62e72b72781ef209b84c686f154df
   React-CoreModules: 5b6b7668f156f73a56420df9ec68ca2ec8f2e818
-  React-cxxreact: c7ca2baee46db22a30fce9e639277add3c3f6ad1
-  React-hermes: c93e1d759ad5560dfea54d233013d7d2c725c286
-  React-jsi: a565dcb49130ed20877a9bb1105ffeecbb93d02d
-  React-jsiexecutor: 31564fa6912459921568e8b0e49024285a4d584b
+  React-cxxreact: a099892e4ae5378bfb69e5f9687f23eed754accb
+  React-hermes: 4c911673c9a0e1e57493ee99b605352fadf17db0
+  React-jsi: 0ac3d48db875eb15f6d960689f1e2c11dac46bae
+  React-jsiexecutor: 4af6f5be6f13d9b6125fbf4b4e035779dc8c7096
   React-jsinspector: badd81696361249893a80477983e697aab3c1a34
-  React-logger: fdda34dd285bdb0232e059b19d9606fa0ec3bb9c
+  React-logger: e214e31cd09184f9e7073612575ad44dc5a0f434
   React-perflogger: e68d3795cf5d247a0379735cbac7309adf2fb931
   React-RCTActionSheet: 05452c3b281edb27850253db13ecd4c5a65bc247
   React-RCTAnimation: 578eebac706428e68466118e84aeacf3a282b4da
@@ -590,13 +591,12 @@ SPEC CHECKSUMS:
   React-RCTText: c591e8bd9347a294d8416357ca12d779afec01d5
   React-RCTVibration: 8e5c8c5d17af641f306d7380d8d0fe9b3c142c48
   React-runtimeexecutor: 7401c4a40f8728fd89df4a56104541b760876117
-  ReactCommon: c9246996e73bf75a2c6c3ff15f1e16707cdc2da9
-  RNCAsyncStorage: 0c357f3156fcb16c8589ede67cc036330b6698ca
+  ReactCommon: 70da22997e823b14851ce18d9024224ee4476b2d
+  RNCAsyncStorage: fdb01edd825ea18d63e6faf50b8989cea24f2dd3
   SocketRocket: f32cd54efbe0f095c4d7594881e52619cfe80b17
-  TweetNacl: 3abf4d1d2082b0114e7a67410e300892448951e6
   Yoga: eca980a5771bf114c41a754098cd85e6e0d90ed7
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
 PODFILE CHECKSUM: d982d74711b8c9a54ff13a4f593f7931fb31358f
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.16.2
