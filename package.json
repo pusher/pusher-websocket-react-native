@@ -143,5 +143,10 @@
         }
       ]
     ]
+  },
+  "resolutions": {
+    "ip": "^1.1.9",
+    "@babel/traverse": "^7.23.9",
+    "react-devtools-core": "^4.28.5"
   }
 }
