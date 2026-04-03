@@ -145,10 +145,10 @@ export class Pusher {
 
   public init(args: {
     apiKey: string;
+    cluster?: string;
     host?: string;
     wsPort?: Number;
     wssPort?: Number;
-    cluster?: string;
     authEndpoint?: string;
     useTLS?: boolean;
     activityTimeout?: Number;
@@ -281,10 +281,10 @@ export class Pusher {
 
     return PusherWebsocketReactNative.initialize({
       apiKey: args.apiKey,
+      cluster: args.cluster,
       host: args.host,
       wsPort: args.wsPort,
       wssPort: args.wssPort,
-      cluster: args.cluster,
       authEndpoint: args.authEndpoint,
       useTLS: args.useTLS,
       activityTimeout: args.activityTimeout,
@@ -366,7 +366,10 @@ export class Pusher {
       event.channelName.startsWith('private-') ||
       event.channelName.startsWith('presence-')
     ) {
-      const data = Platform.OS === 'android' ? JSON.stringify(event.data ?? {}) : event.data
+      const data =
+        Platform.OS === 'android'
+          ? JSON.stringify(event.data ?? {})
+          : event.data;
       await PusherWebsocketReactNative.trigger(
         event.channelName,
         event.eventName,
