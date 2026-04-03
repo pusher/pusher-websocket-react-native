@@ -23,6 +23,9 @@
   "resolutions": {
     "ip": "^1.1.9",
     "@babel/traverse": "^7.23.9",
-    "react-devtools-core": "^4.28.5"
+    "react-devtools-core": "^4.28.5",
+    "picomatch": "^2.3.2",
+    "minimatch": "^3.1.5",
+    "semver": "^5.7.2"
   }
 }
