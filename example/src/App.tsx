@@ -69,9 +69,6 @@ export default function App() {
 
       await pusher.init({
         apiKey,
-        host,
-        wsPort,
-        wssPort,
         cluster,
         host: host || undefined,
         wsPort: wsPort ? Number(wsPort) : undefined,
