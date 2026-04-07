@@ -40,10 +40,10 @@ a minimal application to connect to a channel and send events.
     - [`activityTimeout (double)`](#activitytimeout-double)
     - [`apiKey (string)`](#apikey-string)
     - [`authEndpoint (string)`](#authendpoint-string)
-    - [`host (string)`](#host-string)
-    - [`wsPort (string)`](#wsPort-number)
-    - [`wssPort (string)`](#wssPort-number)
     - [`cluster (string)`](#cluster-string)
+    - [`host (string)`](#host-string)
+    - [`wsPort (number)`](#wsport-number)
+    - [`wssPort (number)`](#wssport-number)
     - [`useTLS (bool)`](#usetls-bool)
   - [Event Callback parameters](#event-callback-parameters)
     - [`onEvent`](#onevent)
@@ -161,10 +161,10 @@ describes available parameters for each platform:
 | activityTimeout            |    ✅    |  ✅  |
 | apiKey                     |    ✅    |  ✅  |
 | authEndpoint               |    ✅    |  ✅  |
+| cluster                    |    ✅    |  ✅  |
 | host                       |    ✅    |  ✅  |
 | wsPort                     |    ✅    |  ✅  |
 | wssPort                    |    ✅    |  ✅  |
-| cluster                    |    ✅    |  ✅  |
 | maxReconnectGapInSeconds   |    ✅    |  ✅  |
 | maxReconnectionAttempts    |    ✅    |  ✅  |
 | pongTimeout                |    ✅    |  ✅  |
@@ -174,11 +174,11 @@ describes available parameters for each platform:
 
 #### `activityTimeout (double)`
 
-If no messages are received after this time period (in seconds),  the ping message is sent to check if the connection is still working. The server supplies the default value, low values result in unnecessary traffic.
+If no messages are received after this time period (in seconds), the ping message is sent to check if the connection is still working. The server supplies the default value, low values result in unnecessary traffic.
 
 #### `apiKey (string)`
 
-You can get your `APP_KEY` and `APP_CLUSTER` from the the App page on the App Keys section in your [Pusher Channels Dashboard](https://dashboard.pusher.com/)
+You can get your `APP_KEY` and `APP_CLUSTER` from the App page on the App Keys section in your [Pusher Channels Dashboard](https://dashboard.pusher.com/)
 
 #### `authEndpoint (string)`
 
@@ -203,13 +203,25 @@ Specifies the wssPort that pusher-js should connect to. If you do not specify a 
 
 Specifies the cluster that pusher-js should connect to. Here's the full list of [Pusher clusters](https://pusher.com/docs/clusters). If you do not specify a cluster, `mt1` will be used by default.
 
+#### `host (string)`
+
+Specifies the host that the Pusher client should connect to. If you do not specify a host, the default Pusher host will be used.
+
+#### `wsPort (number)`
+
+Specifies the port that the Pusher client should use for unencrypted WebSocket connections. If not specified, `80` will be used by default.
+
+#### `wssPort (number)`
+
+Specifies the port that the Pusher client should use for encrypted WebSocket connections. If not specified, `443` will be used by default.
+
 #### `useTLS (bool)`
 
 Whether or not you would like to use TLS encrypted transport or not, default is `true`.
 
 #### `authorizerTimeoutInSeconds (double)`
 
-If onAuthorizer callback is not called in Javascript before this time period (in seconds), the authorization for the channel will timeout on the native side. Default value: 10 seconds. iOS only.
+If onAuthorizer callback is not called in Javascript before this time period (in seconds), the authorization for the channel will time out on the native side. Default value: 10 seconds. iOS only.
 
 
 ## Event Callback parameters
@@ -317,7 +329,7 @@ The connection can have different states, as follows:
 - `CONNECTED` - Connection successfully established
 - `DISCONNECTING` - Connection is about to be disconnected.
 - `DISCONNECTED` - Connection has been disconnected with no attempts to automatically reconnect.
-- `RECONNECTING` - Atempting to re-establish the connection.
+- `RECONNECTING` - Attempting to re-establish the connection.
 
 #### `onError`
 

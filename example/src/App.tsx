@@ -26,8 +26,8 @@ export default function App() {
 
   const [apiKey, onChangeApiKey] = React.useState('');
   const [host, onChangeHost] = React.useState('');
-  const [wsPort, onChangeWsPort] = React.useState(80);
-  const [wssPort, onChangeWssPort] = React.useState(443);
+  const [wsPort, onChangeWsPort] = React.useState('');
+  const [wssPort, onChangeWssPort] = React.useState('');
   const [cluster, onChangeCluster] = React.useState('');
   const [channelName, onChangeChannelName] = React.useState('');
   const [eventName, onChangeEventName] = React.useState('');
@@ -69,10 +69,10 @@ export default function App() {
 
       await pusher.init({
         apiKey,
-        host,
-        wsPort,
-        wssPort,
         cluster,
+        host: host || undefined,
+        wsPort: wsPort ? Number(wsPort) : undefined,
+        wssPort: wssPort ? Number(wssPort) : undefined,
         // authEndpoint
         // ============
         // You can let the pusher library call an endpoint URL,
@@ -242,7 +242,7 @@ export default function App() {
             style={styles.input}
             onChangeText={onChangeHost}
             value={host}
-            placeholder="Host"
+            placeholder="Host (optional)"
             autoCapitalize="none"
             keyboardType="default"
           />
@@ -250,17 +250,17 @@ export default function App() {
             style={styles.input}
             onChangeText={onChangeWsPort}
             value={wsPort}
-            placeholder="80"
+            placeholder="WS Port (optional)"
             autoCapitalize="none"
-            keyboardType="default"
+            keyboardType="number-pad"
           />
           <TextInput
             style={styles.input}
             onChangeText={onChangeWssPort}
             value={wssPort}
-            placeholder="443"
+            placeholder="WSS Port (optional)"
             autoCapitalize="none"
-            keyboardType="default"
+            keyboardType="number-pad"
           />
           <TextInput
             style={styles.input}
