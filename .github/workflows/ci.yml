@@ -7,11 +7,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v6
     - name: Yarn install
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v6
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 20.x
     - run: yarn install --cwd example --frozen-lockfile
     - run: yarn install --frozen-lockfile
     - run: yarn typescript
