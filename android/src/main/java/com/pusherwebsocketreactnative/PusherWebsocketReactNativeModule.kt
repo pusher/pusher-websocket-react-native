@@ -13,6 +13,7 @@ import com.pusher.client.connection.ConnectionStateChange
 import com.pusher.client.util.HttpChannelAuthorizer
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Semaphore
 
 class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
@@ -23,8 +24,9 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
 
   private var pusher: Pusher? = null
   private val TAG = "PusherReactNative"
-  private val authorizerMutex = mutableMapOf<String, Semaphore>()
-  private val authorizerResult = mutableMapOf<String, ReadableMap>()
+  // Written from the Pusher event thread and read from the React Native modules thread.
+  private val authorizerMutex = ConcurrentHashMap<String, Semaphore>()
+  private val authorizerResult = ConcurrentHashMap<String, ReadableMap>()
 
   private val pusherEventEmitter = PusherEventEmitter(reactContext)
 
@@ -144,15 +146,17 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   }
 
   override fun authorize(channelName: String, socketId: String): String? {
+    val key = channelName + socketId
+    // Store the semaphore before asking JS, so a fast reply always finds it.
+    val semaphore = Semaphore(0)
+    authorizerMutex[key] = semaphore
     pusherEventEmitter.emit(
       "onAuthorizer", mapOf(
         "channelName" to channelName,
         "socketId" to socketId
       )
     )
-    val key = channelName + socketId
-    authorizerMutex[key] = Semaphore(0)
-    authorizerMutex[key]!!.acquire()
+    semaphore.acquire()
     val authParams = authorizerResult.remove(key)!!
     val gson = Gson()
     return gson.toJson(authParams.toHashMap())
@@ -161,9 +165,14 @@ class PusherWebsocketReactNativeModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   fun onAuthorizer(channelName: String, socketId: String, data: ReadableMap, promise: Promise) {
     val key = channelName + socketId
-    authorizerResult[key] = data
-    authorizerMutex[key]!!.release()
-    authorizerMutex.remove(key)
+    // A reply nobody waits for is dropped instead of throwing a NullPointerException (#113).
+    val semaphore = authorizerMutex.remove(key)
+    if (semaphore == null) {
+      Log.w(TAG, "Ignoring onAuthorizer reply with no pending request for $channelName")
+    } else {
+      authorizerResult[key] = data
+      semaphore.release()
+    }
     promise.resolve(null)
   }
 
