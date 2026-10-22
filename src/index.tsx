@@ -366,8 +366,10 @@ export class Pusher {
       event.channelName.startsWith('private-') ||
       event.channelName.startsWith('presence-')
     ) {
+      // The Android native module takes a string, so serialize anything that
+      // isn't one already. Strings pass through unchanged, as before.
       const data =
-        Platform.OS === 'android'
+        Platform.OS === 'android' && typeof event.data !== 'string'
           ? JSON.stringify(event.data ?? {})
           : event.data;
       await PusherWebsocketReactNative.trigger(
