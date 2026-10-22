@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.6
+
+* [FIXED] Android no longer crashes when onAuthorizer receives a reply with no pending request (#228)
+* [FIXED] Android builds no longer fail with Android Gradle Plugin 9 (#219)
+
 ## 1.3.5
 
 * [FIXED] `PusherChannel.trigger()` now accepts an event without `channelName`, defaulting to the channel's own name, aligning the implementation with the documented API
