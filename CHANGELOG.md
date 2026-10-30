@@ -2,8 +2,11 @@
 
 ## 1.3.6
 
-* [FIXED] Android no longer crashes when onAuthorizer receives a reply with no pending request (#228)
+* [ADDED] `host`, `wsPort` and `wssPort` options, for connecting to self-hosted Pusher-compatible servers such as Laravel Reverb (#165, #196)
+* [FIXED] Android `trigger()` no longer fails when `data` is an object (#158)
+* [FIXED] Android no longer crashes when `onAuthorizer` receives a reply with no pending request (#228)
 * [FIXED] Android builds no longer fail with Android Gradle Plugin 9 (#219)
+* [CHANGED] Android `minSdkVersion` now follows the app's `minSdkVersion`, with a default of 24 (#174)
 
 ## 1.3.5
 
