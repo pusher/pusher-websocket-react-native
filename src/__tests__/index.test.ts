@@ -83,6 +83,43 @@ describe('PusherChannel.trigger()', () => {
 });
 
 // ─────────────────────────────────────────────
+// Pusher.trigger() data on Android
+// ─────────────────────────────────────────────
+
+describe('Pusher.trigger() data on Android', () => {
+  beforeEach(() => {
+    RN.Platform.OS = 'android';
+  });
+
+  afterEach(() => {
+    RN.Platform.OS = 'ios';
+  });
+
+  const triggeredData = async (data: any) => {
+    await Pusher.getInstance().trigger(
+      new PusherEvent({
+        channelName: 'private-my-channel',
+        eventName: 'client-event',
+        data,
+      })
+    );
+    return mockNativeModule.trigger.mock.calls[0][2];
+  };
+
+  it('serializes object data to JSON', async () => {
+    expect(await triggeredData({ myName: 'Bob' })).toBe('{"myName":"Bob"}');
+  });
+
+  it('passes string data through unchanged', async () => {
+    expect(await triggeredData('{"myName":"Bob"}')).toBe('{"myName":"Bob"}');
+  });
+
+  it('sends an empty object when data is missing', async () => {
+    expect(await triggeredData(undefined)).toBe('{}');
+  });
+});
+
+// ─────────────────────────────────────────────
 // Pusher.removeAllListeners() via reset() and init()
 // ─────────────────────────────────────────────
 
